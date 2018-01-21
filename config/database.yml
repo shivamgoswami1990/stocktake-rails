@@ -1,0 +1,17 @@
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: jkstocktake
+  pool: 5
+  username: postgres
+  password:
+  host: localhost
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: jkstocktake
+  pool: 100
+  username: postgres
+  password:
+  host: localhost
