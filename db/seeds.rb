@@ -7,8 +7,18 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 
-User.create( first_name: "Shiv", last_name: "Goswami", email: 'admin@mail.com',
+User.create(first_name: "Shiv", last_name: "Goswami", email: 'admin@mail.com',
              address: "26 Barry Drive, Canberra ACT 2601",password: 'aus12345', phone_no: "0450726216")
+
+Company.create(name: "JK Aromatics", st_address: "Chandni Chowk", city: "Delhi", postcode: "110006",
+               phone_no: "09810825847", contact_email: "abhay@mail.com", state_name: "Delhi",
+               hsn_list: [87477, 23123, 28351, 84773])
+
+Customer.create(name: "Magic Perfumes", st_address: "Shahadara", city: "Delhi", postcode: "110051",
+               phone_no: "09810825847", contact_email: "abhay@mail.com", state_name: "Delhi")
+
+Customer.create(name: "Test Customer", st_address: "Test street", city: "Test city", postcode: "110055",
+                phone_no: "09810825847", contact_email: "test@mail.com", state_name: "Test state")
 
 Item.create(name: "Amber Boquet", series: "A", one_tenth_price: "119.00", quarter_price: "466.00", half_price: "4560.00", bulk_price: "4540.00")
 Item.create(name: "Amber Solid - 333", series: "A", one_tenth_price: "28.00", quarter_price: "102.00", half_price: "920.00", bulk_price: "900.00")

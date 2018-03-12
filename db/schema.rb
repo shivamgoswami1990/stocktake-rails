@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(version: 20171218091552) do
   end
 
   create_table "invoices", force: :cascade do |t|
+    t.boolean "is_same_state_invoice", default: false
     t.integer "invoice_status", default: 0
     t.string "invoice_no", null: false
     t.json "company_details"
@@ -75,6 +76,7 @@ ActiveRecord::Schema.define(version: 20171218091552) do
     t.string "gross_weight"
     t.string "terms_of_delivery"
     t.string "brand_name"
+    t.json "item_array", default: [], array: true
     t.json "item_summary"
     t.string "amount_chargeable_in_words"
     t.json "tax_summary"

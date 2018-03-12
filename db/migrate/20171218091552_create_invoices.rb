@@ -2,6 +2,7 @@ class CreateInvoices < ActiveRecord::Migration[5.1]
   def change
     create_table :invoices do |t|
 
+      t.boolean :is_same_state_invoice, default: false
       t.integer :invoice_status, default: 0
       t.string :invoice_no, null: false
 
@@ -35,6 +36,7 @@ class CreateInvoices < ActiveRecord::Migration[5.1]
 
       t.string :brand_name
 
+      t.json :item_array, array: true, default: []
       t.json :item_summary
       t.string :amount_chargeable_in_words
       t.json :tax_summary
