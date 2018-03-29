@@ -76,6 +76,7 @@ ActiveRecord::Schema.define(version: 20171218091552) do
     t.string "gross_weight"
     t.string "terms_of_delivery"
     t.string "brand_name"
+    t.string "goods_description"
     t.json "item_array", default: [], array: true
     t.json "item_summary"
     t.string "amount_chargeable_in_words"

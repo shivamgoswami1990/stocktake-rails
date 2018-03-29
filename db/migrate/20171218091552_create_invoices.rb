@@ -35,6 +35,7 @@ class CreateInvoices < ActiveRecord::Migration[5.1]
       t.string :terms_of_delivery
 
       t.string :brand_name
+      t.string :goods_description
 
       t.json :item_array, array: true, default: []
       t.json :item_summary
