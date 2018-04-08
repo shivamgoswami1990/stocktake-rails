@@ -95,7 +95,6 @@ ActiveRecord::Schema.define(version: 20171218091552) do
     t.datetime "updated_at", null: false
     t.index ["company_id"], name: "index_invoices_on_company_id"
     t.index ["customer_id"], name: "index_invoices_on_customer_id"
-    t.index ["invoice_no"], name: "index_invoices_on_invoice_no", unique: true
     t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 

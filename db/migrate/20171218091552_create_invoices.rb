@@ -57,7 +57,5 @@ class CreateInvoices < ActiveRecord::Migration[5.1]
 
       t.timestamps
     end
-
-    add_index :invoices, :invoice_no, unique: true
   end
 end
