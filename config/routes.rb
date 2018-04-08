@@ -11,4 +11,5 @@ Rails.application.routes.draw do
 
   resources :invoices
   get 'recent_invoices' => 'invoices#recent_invoices'
+  get 'invoices_between' => 'invoices#invoices_between'
 end

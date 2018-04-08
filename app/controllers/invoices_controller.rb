@@ -2,7 +2,7 @@ class InvoicesController < ApplicationController
 
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
-  before_action :authenticate_user!
+  #before_action :authenticate_user!
   before_action :load_invoice, only: [:show, :edit, :update, :destroy]
 
 
@@ -39,6 +39,14 @@ class InvoicesController < ApplicationController
     else
       render :json => Invoice.all.order(created_at: :desc).limit(k)
     end
+  end
+
+  # GET /invoices_between?from_date=date1&to_date=date2
+  def invoices_between
+    from_date = params[:from_date]
+    to_date = params[:to_date]
+
+    render :json => Invoice.where("created_at >= ? AND created_at <= ?", from_date, to_date)
   end
 
   # GET /invoices/1
