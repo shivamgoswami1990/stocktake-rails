@@ -2,7 +2,7 @@ class InvoicesController < ApplicationController
 
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
-  #before_action :authenticate_user!
+  before_action :authenticate_user!
   before_action :load_invoice, only: [:show, :edit, :update, :destroy]
 
 
@@ -57,13 +57,22 @@ class InvoicesController < ApplicationController
 
   # POST /invoices
   def create
-    @invoice = Invoice.create(invoice_params)
 
-    begin
-      @invoice.save!
-      render :json => @invoice
-    rescue ActiveRecord::RecordNotUnique => e
-      render json: {message: 'Invoice no already taken'}, status: :not_acceptable
+    # Check if invoice no is unique for a company
+    if invoice_params[:invoice_no]
+
+      # Search invoice table for this company_id & invoice no
+      if (Invoice.where('company_id = ? AND invoice_no = ?', invoice_params[:company_id], invoice_params[:invoice_no].to_s).count).eql?(0)
+        @invoice = Invoice.create(invoice_params)
+        if @invoice.save
+          render :json => @invoice
+        else
+          render json: :BadRequest, status: 400
+        end
+      else
+        render json: {:'status' => 'Failed', :'data' => 'Invoice exists for this company'}, status: 400
+      end
+
     end
   end
 
