@@ -2,7 +2,7 @@ class CompaniesController < ApplicationController
 
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
-  #before_action :authenticate_user!
+  before_action :authenticate_user!
   before_action :load_company, only: [:show, :edit, :update, :destroy, :last_created_invoice]
 
 

@@ -46,7 +46,7 @@ class InvoicesController < ApplicationController
     from_date = params[:from_date]
     to_date = params[:to_date]
 
-    render :json => Invoice.where('created_at BETWEEN ? AND ?',
+    render :json => Invoice.where('created_at BETWEEN ? AND ? AND invoice_status = 1',
                                   Time.parse(from_date).utc.beginning_of_day + 86400,
                                   Time.parse(to_date).utc.end_of_day + 86400)
   end

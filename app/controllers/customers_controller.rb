@@ -16,7 +16,7 @@ class CustomersController < ApplicationController
   # GET /customers
   def index
     @customers = apply_scopes(Customer).all
-    render :json => @customers
+    render :json => @customers.order('name ASC')
   end
 
   # GET /customers/1
