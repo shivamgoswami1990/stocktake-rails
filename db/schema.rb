@@ -104,6 +104,10 @@ ActiveRecord::Schema.define(version: 20171218091552) do
     t.float "one_tenth_price"
     t.float "half_price"
     t.float "bulk_price"
+    t.float "dozen_price"
+    t.float "quarter_piece_price"
+    t.float "one_tenth_piece_price"
+    t.float "litre_price"
     t.string "series"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
