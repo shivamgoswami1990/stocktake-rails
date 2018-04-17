@@ -47,7 +47,6 @@ class UsersController < ApplicationController
 
   # DELETE /users/1
   def destroy
-    @user.profile_image.destroy
     @user.destroy
     render :json => @users
   end

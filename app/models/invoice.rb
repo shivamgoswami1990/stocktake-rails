@@ -1,5 +1,4 @@
 class Invoice < ApplicationRecord
-
   # Use scope function from ./app/models/concerns
   include ScopeGenerator
   Invoice.new.createScope(Invoice)

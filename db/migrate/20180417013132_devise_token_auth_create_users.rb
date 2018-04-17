@@ -1,4 +1,4 @@
-class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[5.1]
+class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[5.2]
   def change
     create_table(:users) do |t|
       ## Required
@@ -7,10 +7,6 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[5.1]
 
       ## Database authenticatable
       t.string :encrypted_password, :null => false, :default => ""
-
-      ## Recoverable
-      t.string   :reset_password_token
-      t.datetime :reset_password_sent_at
 
       ## Rememberable
       t.datetime :remember_created_at
@@ -29,9 +25,6 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[5.1]
       t.string :address
       t.string :phone_no
 
-      ## Profile image
-      t.attachment :profile_image
-
       ## Tokens
       t.json :tokens
 
@@ -40,6 +33,5 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[5.1]
 
     add_index :users, :email,                unique: true
     add_index :users, [:uid, :provider],     unique: true
-    add_index :users, :reset_password_token, unique: true
   end
 end

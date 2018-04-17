@@ -4,7 +4,7 @@ module HasScopeGenerator
 
     model.column_names.each do |s|
       controller.has_scope ("by_" + s).to_sym
-      if (model.columns_hash[s].type.eql?(:date) || model.columns_hash[s].type.eql?(:float))
+      if model.columns_hash[s].type.eql?(:date) || model.columns_hash[s].type.eql?(:float)
         controller.has_scope ("by_" + s + "__gt").to_sym
         controller.has_scope ("by_" + s + "__gte").to_sym
         controller.has_scope ("by_" + s + "__lt").to_sym

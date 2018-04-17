@@ -1,7 +1,6 @@
-class CreateCompanies < ActiveRecord::Migration[5.1]
+class CreateCustomers < ActiveRecord::Migration[5.2]
   def change
-    create_table :companies do |t|
-
+    create_table :customers do |t|
       t.string :name
       t.text :st_address
       t.string :city
@@ -12,12 +11,7 @@ class CreateCompanies < ActiveRecord::Migration[5.1]
       t.string :code
       t.string :gstin_no
       t.string :pan_no
-      t.string :brand_name
       t.string :vat_tin_no
-      t.string :bank_name
-      t.string :bank_account_no
-      t.string :bank_branch
-      t.integer :hsn_list, array: true, default: []
 
       t.timestamps
     end

@@ -1,21 +1,29 @@
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'rails', '~> 5.1.4'# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'puma' # Use Puma as the app server
-gem 'rack-cors' # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
+ruby '2.5.1'
 
-group :development do
+# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'rails', '~> 5.2.0'
+# Use postgresql as the database for Active Record
+gem 'pg', '>= 0.18', '< 2.0'
+# Use Puma as the app server
+gem 'puma', '~> 3.11'
+
+# Reduces boot times through caching; required in config/boot.rb
+gem 'bootsnap', '>= 1.1.0', require: false
+
+group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'listen', '>= 3.0.5', '< 3.2'
 end
 
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby] # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-gem 'pg' # Postgres DB Driver
-gem 'devise_token_auth' # Authentication for API only
+gem 'rack-cors'
+
+gem 'devise_token_auth' # API Authentication
+
 gem 'has_scope' # Scope generation
-gem 'paperclip' # File upload
-gem 'kaminari' # Pagination
-gem 'counter_culture' # Persistent counter cache
-gem 'dalli' # Memcached memory store
+

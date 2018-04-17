@@ -1,17 +1,15 @@
-development:
+default: &default
   adapter: postgresql
   encoding: unicode
-  database: jkstocktake
-  pool: 5
-  username: postgres
-  password:
   host: localhost
+  database: jkstocktake
+  username: postgres
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  password:
 
 production:
-  adapter: postgresql
-  encoding: unicode
-  database: jkstocktake
-  pool: 100
-  username: postgres
+  <<: *default
   password:
-  host: localhost
