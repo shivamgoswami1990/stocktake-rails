@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2018_04_17_023107) do
     t.string "bank_account_no"
     t.string "bank_branch"
     t.integer "hsn_list", default: [], array: true
+    t.integer "invoice_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -48,6 +49,7 @@ ActiveRecord::Schema.define(version: 2018_04_17_023107) do
     t.string "gstin_no"
     t.string "pan_no"
     t.string "vat_tin_no"
+    t.integer "invoice_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -128,6 +130,7 @@ ActiveRecord::Schema.define(version: 2018_04_17_023107) do
     t.string "last_name"
     t.string "address"
     t.string "phone_no"
+    t.integer "invoice_count", default: 0, null: false
     t.json "tokens"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -27,3 +27,5 @@ gem 'devise_token_auth' # API Authentication
 
 gem 'has_scope' # Scope generation
 
+gem 'counter_culture', '~> 1.9.2' # Counter cache
+

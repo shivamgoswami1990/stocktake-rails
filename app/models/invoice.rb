@@ -7,6 +7,19 @@ class Invoice < ApplicationRecord
   belongs_to :customer
   belongs_to :company
 
+  counter_culture :company, column_name: proc {|model| model.invoice_status.eql?('SAVED') ? 'invoice_count' : nil},
+                  column_names: {
+                      ["invoices.invoice_status = ?", 1] => 'invoice_count'
+                  }
+  counter_culture :customer, column_name: proc {|model| model.invoice_status.eql?('SAVED') ? 'invoice_count' : nil},
+                  column_names: {
+                      ["invoices.invoice_status = ?", 1] => 'invoice_count'
+                  }
+  counter_culture :user, column_name: proc {|model| model.invoice_status.eql?('SAVED') ? 'invoice_count' : nil},
+                  column_names: {
+                      ["invoices.invoice_status = ?", 1] => 'invoice_count'
+                  }
+
   # Define enum
   enum invoice_status: [:DRAFT, :SAVED]
 

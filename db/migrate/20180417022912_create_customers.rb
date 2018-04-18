@@ -13,6 +13,8 @@ class CreateCustomers < ActiveRecord::Migration[5.2]
       t.string :pan_no
       t.string :vat_tin_no
 
+      t.integer :invoice_count, null: false, default: 0
+
       t.timestamps
     end
   end

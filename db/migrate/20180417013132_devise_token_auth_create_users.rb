@@ -25,6 +25,8 @@ class DeviseTokenAuthCreateUsers < ActiveRecord::Migration[5.2]
       t.string :address
       t.string :phone_no
 
+      t.integer :invoice_count, null: false, default: 0
+
       ## Tokens
       t.json :tokens
 
