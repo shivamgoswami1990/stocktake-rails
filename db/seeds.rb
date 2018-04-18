@@ -10,6 +10,8 @@
 User.create(first_name: "Shiv", last_name: "Goswami", email: 'admin@mail.com',
             address: "26 Barry Drive, Canberra ACT 2601",password: 'aus12345', phone_no: "0450726216")
 
+Statistic.create
+
 Item.create(name: "Amber Boquet", series: "A", one_tenth_price: "119.00", quarter_price: "466.00", half_price: "4560.00", bulk_price: "4540.00")
 Item.create(name: "Amber Solid - 333", series: "A", one_tenth_price: "28.00", quarter_price: "102.00", half_price: "920.00", bulk_price: "900.00")
 Item.create(name: "Amber Solid Extra", series: "A", one_tenth_price: "51.00", quarter_price: "194.00", half_price: "1840.00", bulk_price: "1820.00")

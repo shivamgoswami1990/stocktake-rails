@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_04_17_023107) do
+ActiveRecord::Schema.define(version: 2018_04_18_024532) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -111,6 +111,16 @@ ActiveRecord::Schema.define(version: 2018_04_17_023107) do
     t.float "one_tenth_piece_price"
     t.float "litre_price"
     t.string "series"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "statistics", force: :cascade do |t|
+    t.float "total_revenue", default: 0.0, null: false
+    t.float "total_tax", default: 0.0, null: false
+    t.float "total_insurance", default: 0.0, null: false
+    t.float "total_postage", default: 0.0, null: false
+    t.float "total_discount", default: 0.0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
