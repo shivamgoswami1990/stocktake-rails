@@ -33,6 +33,7 @@ class Invoice < ApplicationRecord
   private
   def update_statistics
     total_revenue = 0
+    total_taxable_value = 0
     total_tax = 0
     total_insurance = 0
     total_postage = 0
@@ -43,6 +44,7 @@ class Invoice < ApplicationRecord
       invoice_tax_summary = invoice[1]
 
       total_revenue += invoice_item_summary['total_after_round_off'].to_f if invoice_item_summary['total_after_round_off'].present?
+      total_taxable_value += invoice_tax_summary['hsn_summary_total']['total_taxable_value'].to_f if invoice_tax_summary.present?
       total_tax += invoice_tax_summary['hsn_summary'][0]['total_tax_amount'].to_f if invoice_tax_summary.present?
       total_insurance += invoice_item_summary['insurance_percentage_amount'].to_f if invoice_item_summary['insurance_percentage_amount'].present?
       total_postage += invoice_item_summary['postage_charge'].to_f if invoice_item_summary['postage_charge'].present?
@@ -53,7 +55,7 @@ class Invoice < ApplicationRecord
     statistic = Statistic.first
 
     if statistic
-      statistic.update(total_revenue: total_revenue.to_f, total_tax: total_tax.to_f,
+      statistic.update(total_revenue: total_revenue.to_f, total_taxable_value: total_taxable_value.to_f, total_tax: total_tax.to_f,
                      total_insurance: total_insurance.to_f, total_postage: total_postage.to_f, total_discount: total_discount.to_f)
       statistic.save
     end

@@ -117,6 +117,7 @@ ActiveRecord::Schema.define(version: 2018_04_18_024532) do
 
   create_table "statistics", force: :cascade do |t|
     t.float "total_revenue", default: 0.0, null: false
+    t.float "total_taxable_value", default: 0.0, null: false
     t.float "total_tax", default: 0.0, null: false
     t.float "total_insurance", default: 0.0, null: false
     t.float "total_postage", default: 0.0, null: false
