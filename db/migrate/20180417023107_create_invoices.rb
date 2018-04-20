@@ -2,6 +2,7 @@ class CreateInvoices < ActiveRecord::Migration[5.2]
   def change
     create_table :invoices do |t|
       t.boolean :is_same_state_invoice, default: false
+      t.integer :packaging_type, null: false, default: 1
       t.integer :invoice_status, default: 0
       t.string :invoice_no, null: false
 
