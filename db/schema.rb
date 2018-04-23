@@ -27,7 +27,6 @@ ActiveRecord::Schema.define(version: 2018_04_18_024532) do
     t.string "gstin_no"
     t.string "pan_no"
     t.string "brand_name"
-    t.string "vat_tin_no"
     t.string "bank_name"
     t.string "bank_account_no"
     t.string "bank_branch"
@@ -48,7 +47,7 @@ ActiveRecord::Schema.define(version: 2018_04_18_024532) do
     t.string "code"
     t.string "gstin_no"
     t.string "pan_no"
-    t.string "vat_tin_no"
+    t.string "aadhar_no"
     t.integer "invoice_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -85,8 +84,7 @@ ActiveRecord::Schema.define(version: 2018_04_18_024532) do
     t.string "amount_chargeable_in_words"
     t.json "tax_summary"
     t.string "tax_amount_in_words"
-    t.string "company_vat_tin"
-    t.string "buyer_vat_tin"
+    t.string "buyer_aadhar"
     t.string "company_pan"
     t.string "company_bank_name"
     t.string "company_account_no"

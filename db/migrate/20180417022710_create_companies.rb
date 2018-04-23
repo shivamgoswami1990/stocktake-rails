@@ -12,7 +12,6 @@ class CreateCompanies < ActiveRecord::Migration[5.2]
       t.string :gstin_no
       t.string :pan_no
       t.string :brand_name
-      t.string :vat_tin_no
       t.string :bank_name
       t.string :bank_account_no
       t.string :bank_branch

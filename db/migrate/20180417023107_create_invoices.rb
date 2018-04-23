@@ -43,8 +43,7 @@ class CreateInvoices < ActiveRecord::Migration[5.2]
       t.json :tax_summary
       t.string :tax_amount_in_words
 
-      t.string :company_vat_tin
-      t.string :buyer_vat_tin
+      t.string :buyer_aadhar
       t.string :company_pan
 
       t.string :company_bank_name

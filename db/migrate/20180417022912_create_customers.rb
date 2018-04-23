@@ -11,7 +11,7 @@ class CreateCustomers < ActiveRecord::Migration[5.2]
       t.string :code
       t.string :gstin_no
       t.string :pan_no
-      t.string :vat_tin_no
+      t.string :aadhar_no
 
       t.integer :invoice_count, null: false, default: 0
 
