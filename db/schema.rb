@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(version: 2018_04_18_024532) do
     t.float "secondary_discount", default: 0.0
     t.boolean "freight_allowed", default: false
     t.integer "freight_type", default: 0, null: false
+    t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
