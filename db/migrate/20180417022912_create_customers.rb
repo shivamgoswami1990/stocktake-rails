@@ -15,6 +15,13 @@ class CreateCustomers < ActiveRecord::Migration[5.2]
 
       t.integer :invoice_count, null: false, default: 0
 
+      t.float :primary_discount, default: 0.00
+      t.float :secondary_discount, default: 0.00
+
+      t.boolean :freight_allowed, default: false
+      t.integer :freight_type, null: false, default: 0
+
+      t.text :notes
       t.timestamps
     end
   end

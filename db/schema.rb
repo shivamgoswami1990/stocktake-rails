@@ -49,6 +49,10 @@ ActiveRecord::Schema.define(version: 2018_04_18_024532) do
     t.string "pan_no"
     t.string "aadhar_no"
     t.integer "invoice_count", default: 0, null: false
+    t.float "primary_discount", default: 0.0
+    t.float "secondary_discount", default: 0.0
+    t.boolean "freight_allowed", default: false
+    t.integer "freight_type", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
