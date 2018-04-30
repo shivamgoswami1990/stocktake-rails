@@ -28,7 +28,10 @@ class CustomersController < ApplicationController
   # GET /customers/1/last_created_invoice
   def last_created_invoice
     @customer = load_customer
-    render :json => {invoice_no: @customer.invoices.last[:invoice_no]} unless @customer.invoices.empty?
+    render :json => {
+        invoice_no: @customer.invoices.last[:invoice_no],
+        invoice_date: @customer.invoices.last[:invoice_date]
+    } unless @customer.invoices.empty?
   end
 
   # POST /customers

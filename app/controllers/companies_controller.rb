@@ -30,7 +30,10 @@ class CompaniesController < ApplicationController
     @company = load_company
 
     if @company
-      render :json => {invoice_no: @company.invoices.last[:invoice_no]} unless @company.invoices.empty?
+      render :json => {
+          invoice_no: @company.invoices.last[:invoice_no],
+          invoice_date: @company.invoices.last[:invoice_date]
+      } unless @company.invoices.empty?
     else
       render :json => {}, status: 404
     end
