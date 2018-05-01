@@ -57,6 +57,23 @@ class InvoicesController < ApplicationController
     render :json => @invoice
   end
 
+  # GET /previous_and_next_invoice?for_invoice_no_as_int=1&company_id=1
+  def previous_and_next_invoice
+    if params[:for_invoice_no_as_int] and params[:company_id]
+      render :json => {
+          :'previous_invoice' => Invoice.where('invoice_no_as_int < ? AND company_id = ?',
+                                               params[:for_invoice_no_as_int],
+                                               params[:company_id]).order('invoice_no_as_int DESC').first,
+          :'next_invoice' => Invoice.where('invoice_no_as_int > ? AND company_id = ?',
+                                           params[:for_invoice_no_as_int],
+                                           params[:company_id]).order('invoice_no_as_int ASC').first
+      }
+    else
+      render json: {:'data' => 'for_invoice_no_as_int and company_id need to be present in the request'}, status: 400
+    end
+
+  end
+
   # POST /invoices
   def create
 
@@ -66,68 +83,12 @@ class InvoicesController < ApplicationController
       # Search invoice table for this company_id & invoice no for unique invoice nos for a company
       if (Invoice.where('company_id = ? AND invoice_no = ?', invoice_params[:company_id],
                         invoice_params[:invoice_no].to_s).count).eql?(0)
-
-        if Invoice.count.eql?(0)
-          @invoice = Invoice.create(invoice_params)
-          if @invoice.save
-            render :json => @invoice
-          else
-            render json: :BadRequest, status: 400
-          end
+        @invoice = Invoice.create(invoice_params)
+        if @invoice.save
+          render :json => @invoice
         else
-
-          is_invoice_creation_allowed = false
-          error_message_1 = ''
-          # More than 1 invoice exists. Get the previous & next invoice
-          if Invoice.where('invoice_no_as_int < ? AND company_id = ?',
-                           invoice_params[:invoice_no_as_int], invoice_params[:company_id]).length > 0
-            previous_invoice = Invoice.where('invoice_no_as_int < ? AND company_id = ?',
-                                             invoice_params[:invoice_no_as_int],
-                                             invoice_params[:company_id]).order('invoice_no_as_int DESC').first
-
-            # Check if there's any previous invoice exists and make sure invoice date is greater than or equal to the
-            # previous invoice date.
-            if Date.parse(invoice_params[:invoice_date].to_s) < Date.parse(previous_invoice[:invoice_date].to_s)
-              is_invoice_creation_allowed = false
-              error_message_1 = 'Invoice date should be later than ' + previous_invoice[:invoice_date].strftime("%e %b, %Y")
-              render json: {:'status' => 'Failed', :'data' => error_message_1}, status: 400 and return
-            else
-              is_invoice_creation_allowed = true
-            end
-          end
-
-          error_message_2 = ''
-          if Invoice.where('invoice_no_as_int > ? AND company_id = ?',
-                           invoice_params[:invoice_no_as_int], invoice_params[:company_id]).length > 0
-            next_invoice = Invoice.where('invoice_no_as_int > ? AND company_id = ?',
-                                         invoice_params[:invoice_no_as_int],
-                                         invoice_params[:company_id]).order('invoice_no_as_int ASC').first
-
-            # Check if there's any next invoice exists and make sure invoice date is less than or equal to the
-            # next invoice date.
-            if Date.parse(invoice_params[:invoice_date].to_s) > Date.parse(next_invoice[:invoice_date].to_s)
-              is_invoice_creation_allowed = false
-              error_message_2 = 'Invoice date should be earlier than ' + next_invoice[:invoice_date].strftime("%e %b, %Y")
-              render json: {:'status' => 'Failed', :'data' => error_message_2}, status: 400 and return
-            else
-              is_invoice_creation_allowed = true
-            end
-          end
-
-          if is_invoice_creation_allowed.eql?(true)
-            # Save the invoice
-            @invoice = Invoice.create(invoice_params)
-            if @invoice.save
-              render :json => @invoice
-            else
-              render json: :BadRequest, status: 400
-            end
-          else
-            render json: {:'status' => 'Failed', :'data' => error_message_1 + error_message_2}, status: 400
-          end
-
+          render json: :BadRequest, status: 400
         end
-
       else
         render json: {:'status' => 'Failed', :'data' => 'Invoice exists for this company'}, status: 400
       end
