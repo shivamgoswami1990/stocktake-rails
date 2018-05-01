@@ -5,6 +5,7 @@ class CreateInvoices < ActiveRecord::Migration[5.2]
       t.integer :packaging_type, null: false, default: 1
       t.integer :invoice_status, default: 0
       t.string :invoice_no, null: false
+      t.integer :invoice_no_as_int
 
       # Company details
       t.json :company_details

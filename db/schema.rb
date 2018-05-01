@@ -63,6 +63,7 @@ ActiveRecord::Schema.define(version: 2018_04_18_024532) do
     t.integer "packaging_type", default: 1, null: false
     t.integer "invoice_status", default: 0
     t.string "invoice_no", null: false
+    t.integer "invoice_no_as_int"
     t.json "company_details"
     t.json "consignee_details"
     t.json "buyer_details"
