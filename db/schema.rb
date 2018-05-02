@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_04_18_024532) do
+ActiveRecord::Schema.define(version: 2018_05_02_002749) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -91,10 +91,6 @@ ActiveRecord::Schema.define(version: 2018_04_18_024532) do
     t.json "tax_summary"
     t.string "tax_amount_in_words"
     t.string "buyer_aadhar"
-    t.string "company_pan"
-    t.string "company_bank_name"
-    t.string "company_account_no"
-    t.string "branch_ifs_code"
     t.bigint "user_id"
     t.bigint "customer_id"
     t.bigint "company_id"
