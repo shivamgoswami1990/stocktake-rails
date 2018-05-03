@@ -46,7 +46,8 @@ class CustomersController < ApplicationController
     @customer = load_customer
     render :json => {
         invoice_no: @customer.invoices.last[:invoice_no],
-        invoice_date: @customer.invoices.last[:invoice_date]
+        invoice_date: @customer.invoices.last[:invoice_date],
+        company_details: @customer.invoices.last[:company_details]
     } unless @customer.invoices.empty?
   end
 

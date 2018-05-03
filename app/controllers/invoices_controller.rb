@@ -16,7 +16,7 @@ class InvoicesController < ApplicationController
   # GET /invoices
   def index
     @invoices = apply_scopes(Invoice).all
-    render :json => @invoices
+    render :json => @invoices.order(invoice_no_as_int: :desc)
   end
 
   # GET /recent_invoices
@@ -48,7 +48,7 @@ class InvoicesController < ApplicationController
 
     render :json => Invoice.where('created_at BETWEEN ? AND ? AND invoice_status = 1',
                                   Time.parse(from_date).utc.beginning_of_day + 86400,
-                                  Time.parse(to_date).utc.end_of_day + 86400)
+                                  Time.parse(to_date).utc.end_of_day + 86400).order(invoice_no_as_int: :desc)
   end
 
   # GET /invoices/1
