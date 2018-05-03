@@ -4,7 +4,7 @@ class CustomersController < ApplicationController
 
   before_action :authenticate_user!
   before_action :load_customer, only: [:show, :edit, :update, :destroy, :last_created_invoice]
-
+  require "json"
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
@@ -15,13 +15,29 @@ class CustomersController < ApplicationController
 
   # GET /customers
   def index
-    @customers = apply_scopes(Customer).all
-    render :json => @customers.order('name ASC')
+    cached_customers = Rails.cache.redis.get("customers")
+    if cached_customers
+      @customers = cached_customers
+
+    else
+      @customers = apply_scopes(Customer).all
+      Rails.cache.redis.set("customers", @customers.order('name ASC').to_json)
+    end
+
+    render :json => @customers
   end
 
   # GET /customers/1
   def show
-    @customer = load_customer
+    cached_customer = Rails.cache.redis.get("customers/" + params[:id].to_s)
+
+    if cached_customer
+      @customer = JSON.parse(cached_customer)
+    else
+      @customer = load_customer
+      Rails.cache.redis.set("customers/" + params[:id].to_s, @customer.to_json)
+    end
+
     render :json => @customer
   end
 

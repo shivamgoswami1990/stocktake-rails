@@ -15,13 +15,29 @@ class CompaniesController < ApplicationController
 
   # GET /companies
   def index
-    @companies = apply_scopes(Company).all
+    cached_companies = Rails.cache.redis.get("companies")
+    if cached_companies
+      @companies = cached_companies
+
+    else
+      @companies = apply_scopes(Company).all
+      Rails.cache.redis.set("companies", @companies.to_json)
+    end
+
     render :json => @companies
   end
 
   # GET /companies/1
   def show
-    @company = load_company
+    cached_company = Rails.cache.redis.get("companies/" + params[:id].to_s)
+
+    if cached_company
+      @company = JSON.parse(cached_company)
+    else
+      @company = load_company
+      Rails.cache.redis.set("companies/" + params[:id].to_s, @company.to_json)
+    end
+
     render :json => @company
   end
 

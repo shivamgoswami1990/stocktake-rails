@@ -29,3 +29,6 @@ gem 'has_scope' # Scope generation
 
 gem 'counter_culture', '~> 1.9.2' # Counter cache
 
+gem 'redis' # Caching and actioncable
+
+gem 'hiredis' # C extension for performance & efficiency

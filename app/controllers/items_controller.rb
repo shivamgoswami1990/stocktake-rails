@@ -1,9 +1,9 @@
 class ItemsController < ApplicationController
 
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
-  #before_action :authenticate_user!
+  before_action :authenticate_user!
   before_action :load_item, only: [:show, :edit, :update, :destroy]
-
+  require "json"
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
@@ -14,13 +14,29 @@ class ItemsController < ApplicationController
 
   # GET /items
   def index
-    @items = apply_scopes(Item).all
+    cached_items = Rails.cache.redis.get("items")
+    if cached_items
+      @items = cached_items
+
+    else
+      @items = apply_scopes(Item).all
+      Rails.cache.redis.set("items", @items.to_json)
+    end
+
     render :json => @items
   end
 
   # GET /items/1
   def show
-    @item = load_item
+    cached_item = Rails.cache.redis.get("items/" + params[:id].to_s)
+
+    if cached_item
+      @item = JSON.parse(cached_item)
+    else
+      @item = load_item
+      Rails.cache.redis.set("items/" + params[:id].to_s, @item.to_json)
+    end
+
     render :json => @item
   end
 
