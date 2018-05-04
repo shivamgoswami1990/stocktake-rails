@@ -4,7 +4,15 @@ class StatisticsController < ApplicationController
 
   # GET /statistics
   def index
-    @statistics = Statistic.first
+    cached_statistics = Rails.cache.redis.get("statistics")
+    if cached_statistics
+      @statistics = cached_statistics
+
+    else
+      @statistics = Statistic.first
+      Rails.cache.redis.set("statistics", @statistics.to_json)
+    end
+
     render :json => @statistics
   end
 end

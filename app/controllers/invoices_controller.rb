@@ -53,7 +53,15 @@ class InvoicesController < ApplicationController
 
   # GET /invoices/1
   def show
-    @invoice = load_invoice
+    cached_invoice = Rails.cache.redis.get("invoices/" + params[:id].to_s)
+
+    if cached_invoice
+      @invoice = JSON.parse(cached_invoice)
+    else
+      @invoice = load_invoice
+      Rails.cache.redis.set("invoices/" + params[:id].to_s, @invoice.to_json)
+    end
+
     render :json => @invoice
   end
 

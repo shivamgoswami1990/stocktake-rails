@@ -28,9 +28,14 @@ class Invoice < ApplicationRecord
     super.as_json(options).merge({ user: self.user, company: self.company, customer: self.customer})
   end
 
-  after_commit :update_statistics # Move this to sidekiq once activejobs are included
+  after_commit :update_statistics, :bust_invoice_cache # Move this to sidekiq once activejobs are included
 
   private
+  def bust_invoice_cache
+    Rails.cache.redis.set("invoices/" + self.id.to_s, self.to_json)
+  end
+
+
   def update_statistics
     total_revenue = 0
     total_taxable_value = 0
