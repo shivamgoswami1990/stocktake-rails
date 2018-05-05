@@ -11,7 +11,7 @@ class Customer < ApplicationRecord
   has_many :invoices, dependent: :destroy
 
   def bust_customer_cache
-    Rails.cache.redis.set("customers", Customer.all.to_json)
+    Rails.cache.redis.set("customers", Customer.all.order('name ASC').to_json)
     Rails.cache.redis.set("customers/" + self.id.to_s, self.to_json)
   end
 end
