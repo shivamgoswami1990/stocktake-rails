@@ -29,8 +29,18 @@ class Invoice < ApplicationRecord
   end
 
   after_commit :update_statistics, :bust_invoice_cache # Move this to sidekiq once activejobs are included
+  after_create_commit :notify_users
 
   private
+  def notify_users
+    ActionCable.server.broadcast('invoices', {'invoice_no' => self.invoice_no,
+                                              'is_same_state_invoice' => self.is_same_state_invoice,
+                                              'company_details' => self.company_details,
+                                              'consignee_details' => self.consignee_details,
+                                              'user' => self.user
+    })
+  end
+
   def bust_invoice_cache
     Rails.cache.redis.set("invoices/" + self.id.to_s, self.to_json)
   end
