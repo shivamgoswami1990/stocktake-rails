@@ -20,7 +20,7 @@ class ItemsController < ApplicationController
 
     else
       @items = apply_scopes(Item).all
-      Rails.cache.redis.set("items", @items.to_json)
+      Rails.cache.redis.set("items", @items.order('name ASC').to_json)
     end
 
     render :json => @items
