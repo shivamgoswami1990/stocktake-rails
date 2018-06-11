@@ -34,6 +34,7 @@ class Invoice < ApplicationRecord
   private
   def notify_users
     ActionCable.server.broadcast('invoices', {'invoice_no' => self.invoice_no,
+                                              'notification_type' => 'new_invoice',
                                               'is_same_state_invoice' => self.is_same_state_invoice,
                                               'company_details' => self.company_details,
                                               'consignee_details' => self.consignee_details,

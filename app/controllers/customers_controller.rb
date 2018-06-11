@@ -64,6 +64,9 @@ class CustomersController < ApplicationController
   # PATCH/PUT /customers/1
   def update
     if @customer.update(customer_params)
+      ActionCable.server.broadcast('invoices', {'notification_type' => 'edited_customer',
+                                                'name' => @customer.name
+      })
       render :json => @customer
     else
       render json: :BadRequest, status: 400

@@ -107,6 +107,13 @@ class InvoicesController < ApplicationController
   # PATCH/PUT /invoices/1
   def update
     if @invoice.update(invoice_params)
+      ActionCable.server.broadcast('invoices', {'invoice_no' => @invoice.invoice_no,
+                                                'notification_type' => 'edited_invoice',
+                                                'is_same_state_invoice' => @invoice.is_same_state_invoice,
+                                                'company_details' => @invoice.company_details,
+                                                'consignee_details' => @invoice.consignee_details,
+                                                'user' => @invoice.user
+      })
       render :json => @invoice
     else
       render json: :BadRequest, status: 400
