@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_05_02_002749) do
+ActiveRecord::Schema.define(version: 2018_06_25_070743) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -56,6 +56,8 @@ ActiveRecord::Schema.define(version: 2018_05_02_002749) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "last_edited_by_id"
+    t.index ["last_edited_by_id"], name: "index_customers_on_last_edited_by_id"
   end
 
   create_table "invoices", force: :cascade do |t|
@@ -96,8 +98,10 @@ ActiveRecord::Schema.define(version: 2018_05_02_002749) do
     t.bigint "company_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "last_edited_by_id"
     t.index ["company_id"], name: "index_invoices_on_company_id"
     t.index ["customer_id"], name: "index_invoices_on_customer_id"
+    t.index ["last_edited_by_id"], name: "index_invoices_on_last_edited_by_id"
     t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 
@@ -150,7 +154,9 @@ ActiveRecord::Schema.define(version: 2018_05_02_002749) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "customers", "users", column: "last_edited_by_id"
   add_foreign_key "invoices", "companies"
   add_foreign_key "invoices", "customers"
   add_foreign_key "invoices", "users"
+  add_foreign_key "invoices", "users", column: "last_edited_by_id"
 end

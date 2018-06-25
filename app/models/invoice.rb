@@ -38,7 +38,9 @@ class Invoice < ApplicationRecord
                                               'is_same_state_invoice' => self.is_same_state_invoice,
                                               'company_details' => self.company_details,
                                               'consignee_details' => self.consignee_details,
-                                              'user' => self.user
+                                              'user' => self.user,
+                                              'last_edited_by_id' => self.last_edited_by_id,
+                                              'last_edited_by_details' => User.find(self.last_edited_by_id)
     })
   end
 

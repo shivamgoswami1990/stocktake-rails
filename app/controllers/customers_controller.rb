@@ -92,7 +92,9 @@ class CustomersController < ApplicationController
   def update
     if @customer.update(customer_params)
       ActionCable.server.broadcast('invoices', {'notification_type' => 'edited_customer',
-                                                'name' => @customer.name
+                                                'name' => @customer.name,
+                                                'last_edited_by_id' => @customer.last_edited_by_id,
+                                                'last_edited_by_details' => User.find(@customer.last_edited_by_id)
       })
       render :json => @customer
     else

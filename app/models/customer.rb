@@ -18,7 +18,9 @@ class Customer < ApplicationRecord
 
   def notify_users
     ActionCable.server.broadcast('invoices', {'notification_type' => 'new_customer',
-                                              'name' => self.name
+                                              'name' => self.name,
+                                              'last_edited_by_id' => self.last_edited_by_id,
+                                              'last_edited_by_details' => User.find(self.last_edited_by_id)
     })
   end
 end

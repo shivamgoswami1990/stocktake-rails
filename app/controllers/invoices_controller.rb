@@ -112,7 +112,9 @@ class InvoicesController < ApplicationController
                                                 'is_same_state_invoice' => @invoice.is_same_state_invoice,
                                                 'company_details' => @invoice.company_details,
                                                 'consignee_details' => @invoice.consignee_details,
-                                                'user' => @invoice.user
+                                                'user' => @invoice.user,
+                                                'last_edited_by_id' => @invoice.last_edited_by_id,
+                                                'last_edited_by_details' => User.find(@invoice.last_edited_by_id)
       })
       render :json => @invoice
     else
