@@ -3,7 +3,7 @@ class CustomersController < ApplicationController
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
   before_action :authenticate_user!
-  before_action :load_customer, only: [:show, :edit, :update, :destroy, :last_created_invoice]
+  before_action :load_customer, only: [:show, :edit, :update, :destroy, :last_created_invoice, :last_five_ordered_items]
   require "json"
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
@@ -49,6 +49,33 @@ class CustomersController < ApplicationController
         invoice_date: @customer.invoices.last[:invoice_date],
         company_details: @customer.invoices.last[:company_details]
     } unless @customer.invoices.empty?
+  end
+
+  # GET /customers/1/last_five_ordered_items
+  def last_five_ordered_items
+    @customer = load_customer
+    items = @customer.invoices.order('created_at DESC').pluck(:item_array)
+
+    ordered_items = []
+
+    # Sort the unique items
+    items.each do |item_array|
+      item_array.each do |item|
+
+        # Check if the item_obj property exists
+        if item.key?("item_obj")
+
+          # Check if ordered items length is less than 5
+          if ordered_items.length < 5
+            ordered_items.push(item)
+          else
+            break
+          end
+        end
+      end
+    end
+
+    render :json => ordered_items
   end
 
   # POST /customers
