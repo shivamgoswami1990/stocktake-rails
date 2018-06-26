@@ -54,12 +54,15 @@ class CustomersController < ApplicationController
   # GET /customers/1/last_five_ordered_items
   def last_five_ordered_items
     @customer = load_customer
-    items = @customer.invoices.order('created_at DESC').pluck(:item_array)
+    results = @customer.invoices.where(invoice_status: 1).order('created_at DESC').pluck(:item_array, :created_at)
 
     ordered_items = []
 
     # Sort the unique items
-    items.each do |item_array|
+    results.each do |result|
+      item_array = result[0]
+      created_at = result[1]
+
       item_array.each do |item|
 
         # Check if the item_obj property exists
@@ -67,6 +70,7 @@ class CustomersController < ApplicationController
 
           # Check if ordered items length is less than 5
           if ordered_items.length < 5
+            item['created_at'] = created_at
             ordered_items.push(item)
           else
             break
