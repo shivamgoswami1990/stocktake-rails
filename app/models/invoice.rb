@@ -1,6 +1,7 @@
 class Invoice < ApplicationRecord
   # Use scope function from ./app/models/concerns
-  include ScopeGenerator
+  include ScopeGenerator, PgSearch
+  pg_search_scope :search_by_item_array, :against => :item_array
   Invoice.new.createScope(Invoice)
 
   belongs_to :user

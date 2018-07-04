@@ -32,3 +32,5 @@ gem 'counter_culture', '~> 1.9.2' # Counter cache
 gem 'redis' # Caching and actioncable
 
 gem 'hiredis' # C extension for performance & efficiency
+
+gem 'pg_search' # Text search for rails models

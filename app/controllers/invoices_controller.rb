@@ -82,6 +82,35 @@ class InvoicesController < ApplicationController
 
   end
 
+  # GET /previous_ordered_item_search_for_customer?customer_id=1&item_name=Amber
+  def previous_ordered_item_search_for_customer
+    if params[:customer_id] and params[:item_name]
+
+      results = Customer.find(params[:customer_id]).invoices.search_by_item_array(params[:item_name]).pluck(:item_array, :created_at)
+
+      ordered_items = []
+
+      # Sort the unique items
+      results.each do |result|
+        item_array = result[0]
+        created_at = result[1]
+
+        item_array.each do |item|
+
+          # Check if item name is not empty
+          if item['item_name'].length > 0
+            item['created_at'] = created_at
+            ordered_items.push(item)
+          end
+        end
+      end
+
+      render :json => ordered_items
+    else
+      render json: {:'data' => 'customer_id and item_name need to be present in the request'}, status: 400
+    end
+  end
+
   # POST /invoices
   def create
 
