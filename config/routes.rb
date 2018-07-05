@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :customers
   get 'customers/:id/last_created_invoice' => 'customers#last_created_invoice'
   get 'customers/:id/last_five_ordered_items' => 'customers#last_five_ordered_items'
+  get 'customers/:id/invoice_sample_comments' => 'customers#invoice_sample_comments'
 
   resources :invoices
   get 'recent_invoices' => 'invoices#recent_invoices'

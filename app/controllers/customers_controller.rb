@@ -3,7 +3,8 @@ class CustomersController < ApplicationController
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
   before_action :authenticate_user!
-  before_action :load_customer, only: [:show, :edit, :update, :destroy, :last_created_invoice, :last_five_ordered_items]
+  before_action :load_customer, only: [:show, :edit, :update, :destroy, :last_created_invoice,
+                                       :last_five_ordered_items, :invoice_sample_comments]
   require "json"
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
@@ -79,6 +80,14 @@ class CustomersController < ApplicationController
     end
 
     render :json => ordered_items
+  end
+
+  # GET /customers/1/invoice_sample_comments
+  def invoice_sample_comments
+    @customer = load_customer
+    invoices = @customer.invoices.where.not('sample_comments' => nil).pluck(:sample_comments)
+
+    render :json => invoices
   end
 
   # POST /customers
