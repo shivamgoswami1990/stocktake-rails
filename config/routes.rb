@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   get 'previous_and_next_invoice' => 'invoices#previous_and_next_invoice'
   get 'previous_ordered_item_search_for_customer' => 'invoices#previous_ordered_item_search_for_customer'
   get 'past_invoices' => 'invoices#past_invoices'
+  get 'historical_data' => 'invoices#historical_data'
 
   resources :statistics
 end

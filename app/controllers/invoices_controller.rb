@@ -123,6 +123,13 @@ class InvoicesController < ApplicationController
     end
   end
 
+  # GET /historical_data
+  def historical_data
+    if params[:by_month].eql?('true')
+      render :json => Invoice.all.group_by{ |t| t.created_at.month }
+    end
+  end
+
   # POST /invoices
   def create
 
