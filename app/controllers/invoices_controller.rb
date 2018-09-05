@@ -111,6 +111,18 @@ class InvoicesController < ApplicationController
     end
   end
 
+  # GET /past_invoices?search_term=Jane
+  def past_invoices
+    if params[:search_term]
+
+      results = Invoice.search_by_company_customer_id(params[:search_term]).select(:id, :invoice_no, :user_id,
+                                                                                   :company_id, :customer_id, :invoice_date)
+      render :json => results
+    else
+      render json: {:'data' => 'search_term need to be present in the request'}, status: 400
+    end
+  end
+
   # POST /invoices
   def create
 
@@ -136,15 +148,6 @@ class InvoicesController < ApplicationController
   # PATCH/PUT /invoices/1
   def update
     if @invoice.update(invoice_params)
-      ActionCable.server.broadcast('invoices', {'invoice_no' => @invoice.invoice_no,
-                                                'notification_type' => 'edited_invoice',
-                                                'is_same_state_invoice' => @invoice.is_same_state_invoice,
-                                                'company_details' => @invoice.company_details,
-                                                'consignee_details' => @invoice.consignee_details,
-                                                'user' => @invoice.user,
-                                                'last_edited_by_id' => @invoice.last_edited_by_id,
-                                                'last_edited_by_details' => User.find(@invoice.last_edited_by_id)
-      })
       render :json => @invoice
     else
       render json: :BadRequest, status: 400

@@ -2,6 +2,11 @@ class Invoice < ApplicationRecord
   # Use scope function from ./app/models/concerns
   include ScopeGenerator, PgSearch
   pg_search_scope :search_by_item_array, :against => :item_array
+  pg_search_scope :search_by_company_customer_id, :using => {:tsearch => {:any_word => true}},
+                  :associated_against => {
+                      :customer => [:name, :st_address, :city, :state_name],
+                      :company => [:name, :st_address, :city, :state_name]
+                  }, :against => [:invoice_no, :invoice_no_as_int]
   Invoice.new.createScope(Invoice)
 
   belongs_to :user
@@ -30,20 +35,8 @@ class Invoice < ApplicationRecord
   end
 
   after_commit :update_statistics, :bust_invoice_cache # Move this to sidekiq once activejobs are included
-  after_create_commit :notify_users
 
   private
-  def notify_users
-    ActionCable.server.broadcast('invoices', {'invoice_no' => self.invoice_no,
-                                              'notification_type' => 'new_invoice',
-                                              'is_same_state_invoice' => self.is_same_state_invoice,
-                                              'company_details' => self.company_details,
-                                              'consignee_details' => self.consignee_details,
-                                              'user' => self.user,
-                                              'last_edited_by_id' => self.last_edited_by_id,
-                                              'last_edited_by_details' => User.find(self.last_edited_by_id)
-    })
-  end
 
   def bust_invoice_cache
     Rails.cache.redis.set("invoices/" + self.id.to_s, self.to_json)

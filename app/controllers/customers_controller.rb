@@ -85,7 +85,7 @@ class CustomersController < ApplicationController
   # GET /customers/1/invoice_sample_comments
   def invoice_sample_comments
     @customer = load_customer
-    invoices = @customer.invoices.where.not('sample_comments' => nil).pluck(:sample_comments)
+    invoices = @customer.invoices.where.not('sample_comments' => nil).pluck(:sample_comments, :invoice_date)
 
     render :json => invoices
   end
@@ -103,11 +103,6 @@ class CustomersController < ApplicationController
   # PATCH/PUT /customers/1
   def update
     if @customer.update(customer_params)
-      ActionCable.server.broadcast('invoices', {'notification_type' => 'edited_customer',
-                                                'name' => @customer.name,
-                                                'last_edited_by_id' => @customer.last_edited_by_id,
-                                                'last_edited_by_details' => User.find(@customer.last_edited_by_id)
-      })
       render :json => @customer
     else
       render json: :BadRequest, status: 400
