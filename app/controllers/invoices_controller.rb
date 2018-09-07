@@ -16,7 +16,7 @@ class InvoicesController < ApplicationController
   # GET /invoices
   def index
     @invoices = apply_scopes(Invoice).all
-    render :json => @invoices.order(invoice_no_as_int: :desc)
+    render :json => @invoices.order(created_at: :desc)
   end
 
   # GET /recent_invoices
