@@ -115,8 +115,7 @@ class InvoicesController < ApplicationController
   def past_invoices
     if params[:search_term]
 
-      results = Invoice.search_by_company_customer_id(params[:search_term]).select(:id, :invoice_no, :user_id, :invoice_status,
-                                                                                   :company_id, :customer_id, :invoice_date)
+      results = Invoice.search_by_company_customer_id(params[:search_term])
       render :json => results
     else
       render json: {:'data' => 'search_term need to be present in the request'}, status: 400
