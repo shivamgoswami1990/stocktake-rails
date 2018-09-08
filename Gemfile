@@ -34,3 +34,5 @@ gem 'redis' # Caching and actioncable
 gem 'hiredis' # C extension for performance & efficiency
 
 gem 'pg_search' # Text search for rails models
+
+gem 'sidekiq'

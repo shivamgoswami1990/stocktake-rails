@@ -140,6 +140,7 @@ class InvoicesController < ApplicationController
                         invoice_params[:invoice_no].to_s).count).eql?(0)
         @invoice = Invoice.create(invoice_params)
         if @invoice.save
+          StatisticCalculationJob.perform_later
           render :json => @invoice
         else
           render json: :BadRequest, status: 400
@@ -154,6 +155,7 @@ class InvoicesController < ApplicationController
   # PATCH/PUT /invoices/1
   def update
     if @invoice.update(invoice_params)
+      StatisticCalculationJob.perform_later
       render :json => @invoice
     else
       render json: :BadRequest, status: 400

@@ -52,6 +52,7 @@ GEM
     builder (3.2.3)
     byebug (10.0.2)
     concurrent-ruby (1.0.5)
+    connection_pool (2.2.2)
     counter_culture (1.9.2)
       activerecord (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -100,6 +101,8 @@ GEM
     puma (3.11.4)
     rack (2.0.4)
     rack-cors (1.0.2)
+    rack-protection (2.0.3)
+      rack
     rack-test (1.0.0)
       rack (>= 1.0, < 3)
     rails (5.2.0)
@@ -131,6 +134,10 @@ GEM
     responders (2.4.0)
       actionpack (>= 4.2.0, < 5.3)
       railties (>= 4.2.0, < 5.3)
+    sidekiq (5.2.1)
+      connection_pool (~> 2.2, >= 2.2.2)
+      rack-protection (>= 1.5.0)
+      redis (>= 3.3.5, < 5)
     sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -164,10 +171,11 @@ DEPENDENCIES
   rack-cors
   rails (~> 5.2.0)
   redis
+  sidekiq
   tzinfo-data
 
 RUBY VERSION
    ruby 2.5.1p57
 
 BUNDLED WITH
-   1.16.1
+   1.16.4
