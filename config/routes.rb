@@ -20,4 +20,7 @@ Rails.application.routes.draw do
   get 'historical_data' => 'invoices#historical_data'
 
   resources :statistics
+
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
 end
