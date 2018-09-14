@@ -69,12 +69,8 @@ class CustomersController < ApplicationController
         # Check if item name is not empty
         if item['item_name'].length > 0
           # Check if ordered items length is less than 5
-          if ordered_items.length < 5
-            item['created_at'] = created_at
-            ordered_items.push(item)
-          else
-            break
-          end
+          item['created_at'] = created_at
+          ordered_items.push(item)
         end
       end
     end
