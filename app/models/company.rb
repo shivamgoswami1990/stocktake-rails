@@ -6,6 +6,7 @@ class Company < ApplicationRecord
   Company.new.createScope(Company)
 
   has_many :invoices, dependent: :destroy
+  has_many :notification_objects, as: :entity
 
   def bust_company_cache
     Rails.cache.redis.set("companies", Company.all.to_json)

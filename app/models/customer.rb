@@ -9,6 +9,7 @@ class Customer < ApplicationRecord
   enum freight_type: [:HALF, :FULL]
 
   has_many :invoices, dependent: :destroy
+  has_many :notification_objects, as: :entity
 
   def bust_customer_cache
     Rails.cache.redis.set("customers", Customer.all.order('name ASC').to_json)

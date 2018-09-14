@@ -10,4 +10,6 @@ class User < ActiveRecord::Base
   User.new.createScope(User)
 
   has_many :invoices
+  has_many :notifications, foreign_key: :notifier_id, class_name: "Notification", dependent: :nullify
+  has_many :notifications, foreign_key: :actor_id, class_name: "Notification", dependent: :nullify
 end

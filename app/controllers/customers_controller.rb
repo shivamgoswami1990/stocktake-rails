@@ -94,6 +94,7 @@ class CustomersController < ApplicationController
   def create
     @customer = Customer.new(customer_params)
     if @customer.save
+      NotificationJob.perform_later('customer', 'created', @customer.id, current_user)
       render :json => @customer
     else
       render json: :BadRequest, status: 400
@@ -103,6 +104,7 @@ class CustomersController < ApplicationController
   # PATCH/PUT /customers/1
   def update
     if @customer.update(customer_params)
+      NotificationJob.perform_later('customer', 'updated', @customer.id, current_user)
       render :json => @customer
     else
       render json: :BadRequest, status: 400

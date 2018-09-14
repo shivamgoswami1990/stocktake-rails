@@ -12,6 +12,7 @@ class Invoice < ApplicationRecord
   belongs_to :user
   belongs_to :customer
   belongs_to :company
+  has_many :notification_objects, as: :entity
 
   counter_culture :company, column_name: proc {|model| model.invoice_status.eql?('SAVED') ? 'invoice_count' : nil},
                   column_names: {

@@ -141,6 +141,7 @@ class InvoicesController < ApplicationController
         @invoice = Invoice.create(invoice_params)
         if @invoice.save
           StatisticCalculationJob.perform_later
+          NotificationJob.perform_later('invoice', 'created', @invoice.id, current_user)
           render :json => @invoice
         else
           render json: :BadRequest, status: 400
@@ -156,6 +157,7 @@ class InvoicesController < ApplicationController
   def update
     if @invoice.update(invoice_params)
       StatisticCalculationJob.perform_later
+      NotificationJob.perform_later('invoice', 'updated', @invoice.id, current_user)
       render :json => @invoice
     else
       render json: :BadRequest, status: 400

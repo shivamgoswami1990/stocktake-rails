@@ -1,6 +1,6 @@
-class InvoiceChannel < ApplicationCable::Channel
+class NotificationChannel < ApplicationCable::Channel
   def subscribed
-    stream_from "invoices"
+    stream_from "notification"
   end
 
   def unsubscribed

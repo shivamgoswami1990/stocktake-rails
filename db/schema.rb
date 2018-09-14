@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_07_04_115243) do
+ActiveRecord::Schema.define(version: 2018_09_09_051034) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -122,6 +122,28 @@ ActiveRecord::Schema.define(version: 2018_07_04_115243) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "notification_objects", force: :cascade do |t|
+    t.string "entity_type"
+    t.integer "entity_id"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.boolean "read_status", default: false
+    t.string "actor_name"
+    t.string "notifier_name"
+    t.bigint "notification_object_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "notifier_id"
+    t.bigint "actor_id"
+    t.index ["actor_id"], name: "index_notifications_on_actor_id"
+    t.index ["notification_object_id"], name: "index_notifications_on_notification_object_id"
+    t.index ["notifier_id"], name: "index_notifications_on_notifier_id"
+  end
+
   create_table "statistics", force: :cascade do |t|
     t.float "total_revenue", default: 0.0, null: false
     t.float "total_taxable_value", default: 0.0, null: false
@@ -161,4 +183,7 @@ ActiveRecord::Schema.define(version: 2018_07_04_115243) do
   add_foreign_key "invoices", "customers"
   add_foreign_key "invoices", "users"
   add_foreign_key "invoices", "users", column: "last_edited_by_id"
+  add_foreign_key "notifications", "notification_objects"
+  add_foreign_key "notifications", "users", column: "actor_id"
+  add_foreign_key "notifications", "users", column: "notifier_id"
 end

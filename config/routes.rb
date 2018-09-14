@@ -19,6 +19,10 @@ Rails.application.routes.draw do
   get 'past_invoices' => 'invoices#past_invoices'
   get 'historical_data' => 'invoices#historical_data'
 
+  get 'unread_notifications' => 'notifications#unread_notifications'
+  get 'unread_notification_count' => 'notifications#unread_notification_count'
+  put 'mark_notification_as_read' => 'notifications#mark_notification_as_read'
+
   resources :statistics
 
   require 'sidekiq/web'
