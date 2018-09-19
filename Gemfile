@@ -23,7 +23,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'rack-cors'
 
-gem 'devise_token_auth' # API Authentication
+gem 'devise_token_auth' # API Authenticatio
 
 gem 'has_scope' # Scope generation
 
@@ -35,4 +35,6 @@ gem 'hiredis' # C extension for performance & efficiency
 
 gem 'pg_search' # Text search for rails models
 
-gem 'sidekiq'
+gem 'sidekiq' # Async background task management
+
+gem 'by_star' # Relative date/time related queries
