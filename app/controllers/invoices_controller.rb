@@ -137,6 +137,15 @@ class InvoicesController < ApplicationController
 
     invoice_list.each do |invoice|
       invoice['tax_summary']['hsn_summary'].each do |hsn_row|
+        # Add first item without check
+        if grouped_hsn_summary.length.eql?0
+          grouped_hsn_summary.append({
+                                         hsn: hsn_row['hsn'].to_s,
+                                         taxable_value: hsn_row['taxable_value'].to_f,
+                                         total_tax_amount: hsn_row['total_tax_amount'].to_f,
+                                         invoices: [{id: invoice.id, invoice_no: invoice.invoice_no}]
+                                     })
+        end
         # For each hsn go through the grouped hsn_list
         match_found = false
         grouped_hsn_summary.each do |grouped_hsn_row|
