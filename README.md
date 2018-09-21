@@ -25,4 +25,5 @@ Things you may want to cover:
     - puma -C config/puma.rb -d
     - RAILS_ENV=production rails db:drop DISABLE_DATABASE_ENVIRONMENT_CHECK=1
     - Edit credentials : 'EDITOR="nano" bin/rails credentials:edit'
-    - bundle exec sidekiq -L log/sidekiq.log -d -e production
+    - 
+    

@@ -5,7 +5,6 @@ class InvoicesController < ApplicationController
   before_action :authenticate_user!
   before_action :load_invoice, only: [:show, :edit, :update, :destroy]
 
-
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
   #Initialise scopes using concerns
@@ -125,8 +124,44 @@ class InvoicesController < ApplicationController
   # GET /historical_data
   def historical_data
     if params[:by_month].eql?('true')
-      render :json => Invoice.all.group_by{ |t| t.created_at.month }
+      render :json => Invoice.all.group_by {|t| t.created_at.month}
     end
+  end
+
+  # GET /hsn_summary_by_date?month=Jan
+  def hsn_summary_by_date
+    # Get invoices by month, fortnight or date and group taxable values by HSN no types
+    invoices = Company.find(params[:company_id]).invoices
+    invoice_list = invoices.by_month(params[:month], strict: true, field: 'invoice_date', year: params[:year])
+    grouped_hsn_summary = []
+
+    invoice_list.each do |invoice|
+      invoice['tax_summary']['hsn_summary'].each do |hsn_row|
+        # For each hsn go through the grouped hsn_list
+        match_found = false
+        grouped_hsn_summary.each do |grouped_hsn_row|
+          if grouped_hsn_row[:hsn].eql?(hsn_row['hsn'].to_s)
+            match_found = true
+            grouped_hsn_row['taxable_value'] = grouped_hsn_row['taxable_value'].to_f + hsn_row['taxable_value'].to_f
+            grouped_hsn_row['total_tax_amount'] = grouped_hsn_row['total_tax_amount'].to_f + hsn_row['total_tax_amount'].to_f
+            grouped_hsn_row[:invoices].append({id: invoice.id, invoice_no: invoice.invoice_no})
+            break
+          end
+        end
+
+        if match_found.eql? false
+          # Add the unmatched hsn as a new entry in grouped hsn
+          grouped_hsn_summary.append({
+                                         hsn: hsn_row['hsn'].to_s,
+                                         taxable_value: hsn_row['taxable_value'].to_f,
+                                         total_tax_amount: hsn_row['total_tax_amount'].to_f,
+                                         invoices: [{id: invoice.id, invoice_no: invoice.invoice_no}]
+                                     })
+        end
+      end
+    end
+
+    render :json => grouped_hsn_summary
   end
 
   # POST /invoices
@@ -171,6 +206,7 @@ class InvoicesController < ApplicationController
   end
 
   private
+
   # Use callbacks to share common setup or constraints between actions.
   def load_invoice
     @invoice = Invoice.find(params[:id])

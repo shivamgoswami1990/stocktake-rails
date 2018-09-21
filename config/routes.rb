@@ -8,7 +8,7 @@ Rails.application.routes.draw do
 
   resources :customers
   get 'customers/:id/last_created_invoice' => 'customers#last_created_invoice'
-  get 'customers/:id/last_five_ordered_items' => 'customers#last_five_ordered_items'
+  get 'customers/:id/all_ordered_items' => 'customers#all_ordered_items'
   get 'customers/:id/invoice_sample_comments' => 'customers#invoice_sample_comments'
 
   resources :invoices
@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get 'previous_ordered_item_search_for_customer' => 'invoices#previous_ordered_item_search_for_customer'
   get 'past_invoices' => 'invoices#past_invoices'
   get 'historical_data' => 'invoices#historical_data'
+  get 'hsn_summary_by_date' => 'invoices#hsn_summary_by_date'
 
   get 'unread_notifications' => 'notifications#unread_notifications'
   get 'unread_notification_count' => 'notifications#unread_notification_count'

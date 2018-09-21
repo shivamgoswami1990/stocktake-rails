@@ -2,9 +2,10 @@ class CustomersController < ApplicationController
 
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
+
   before_action :authenticate_user!
   before_action :load_customer, only: [:show, :edit, :update, :destroy, :last_created_invoice,
-                                       :last_five_ordered_items, :invoice_sample_comments]
+                                       :all_ordered_items, :invoice_sample_comments]
   require "json"
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
@@ -45,15 +46,16 @@ class CustomersController < ApplicationController
   # GET /customers/1/last_created_invoice
   def last_created_invoice
     @customer = load_customer
+    last_invoice = @customer.invoices.last
     render :json => {
-        invoice_no: @customer.invoices.last[:invoice_no],
-        invoice_date: @customer.invoices.last[:invoice_date],
-        company_details: @customer.invoices.last[:company_details]
+        invoice_no: last_invoice[:invoice_no],
+        invoice_date: last_invoice[:invoice_date],
+        company_details: last_invoice[:company_details]
     } unless @customer.invoices.empty?
   end
 
-  # GET /customers/1/last_five_ordered_items
-  def last_five_ordered_items
+  # GET /customers/1/all_ordered_items
+  def all_ordered_items
     @customer = load_customer
     results = @customer.invoices.where(invoice_status: 1).order('created_at DESC').pluck(:item_array, :created_at)
 
