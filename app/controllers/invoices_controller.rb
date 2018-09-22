@@ -152,7 +152,7 @@ class InvoicesController < ApplicationController
         current_taxable_value = hsn_row['taxable_value']
         current_total_tax_amount = hsn_row['total_tax_amount']
 
-        if match_found.eql?(false) || grouped_hsn_summary.length.eql?(0)
+        if grouped_hsn_summary.length.eql?(0)
           # Add the unmatched hsn as a new entry in grouped hsn
           grouped_hsn_summary.append({
                                          hsn: current_hsn,
@@ -162,7 +162,7 @@ class InvoicesController < ApplicationController
                                          taxable_value: current_taxable_value,
                                          total_tax_amount: current_total_tax_amount,
                                          quantity: calculate_total_quantity_by_hsn(items, current_hsn),
-                                         invoices: []
+                                         invoices: [{id: invoice.id, invoice_no: invoice.invoice_no}]
                                      })
         end
 
@@ -179,6 +179,20 @@ class InvoicesController < ApplicationController
             grouped_hsn_row[:invoices].append({id: invoice.id, invoice_no: invoice.invoice_no})
             break
           end
+        end
+
+        if match_found.eql?(false)
+          # Add the unmatched hsn as a new entry in grouped hsn
+          grouped_hsn_summary.append({
+                                         hsn: current_hsn,
+                                         amount: current_amount,
+                                         cgst_amount: current_cgst_amount,
+                                         sgst_amount: current_sgst_amount,
+                                         taxable_value: current_taxable_value,
+                                         total_tax_amount: current_total_tax_amount,
+                                         quantity: calculate_total_quantity_by_hsn(items, current_hsn),
+                                         invoices: [{id: invoice.id, invoice_no: invoice.invoice_no}]
+                                     })
         end
       end
     end
