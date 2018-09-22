@@ -24,4 +24,11 @@ class NotificationsController < ApplicationController
   def mark_notification_as_read
     Notification.find(params[:id]).update(read_status: true)
   end
+
+  # PUT /mark_all_notifications_as_read?user_id=1
+  def mark_all_notifications_as_read
+    unread_notifications = Notification.where('notifier_id = ? AND read_status = false', params[:user_id])
+    unread_notifications.update_all(read_status: true)
+    render :json => {status: 'success'}
+  end
 end
