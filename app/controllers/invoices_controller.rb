@@ -145,62 +145,40 @@ class InvoicesController < ApplicationController
       invoice['tax_summary']['hsn_summary'].each do |hsn_row|
         # For each hsn go through the grouped hsn_list
         match_found = false
-        grouped_hsn_summary.each do |grouped_hsn_row|
-          if grouped_hsn_row[:hsn].eql?(hsn_row['hsn'].to_s)
-            match_found = true
-            amount = 0
-            cgst_amount = 0
-            sgst_amount = 0
-
-            if hsn_row['amount'].nil?.eql?false
-              amount = hsn_row['amount']
-            end
-
-            if hsn_row['cgst_amount'].nil?.eql?false
-              cgst_amount = hsn_row['cgst_amount']
-            end
-
-            if hsn_row['sgst_amount'].nil?.eql?false
-              sgst_amount = hsn_row['sgst_amount']
-            end
-            grouped_hsn_row['taxable_value'] = grouped_hsn_row['taxable_value'].to_f + hsn_row['taxable_value'].to_f
-            grouped_hsn_row['total_tax_amount'] = grouped_hsn_row['total_tax_amount'].to_f + hsn_row['total_tax_amount'].to_f
-            grouped_hsn_row['quantity'] = grouped_hsn_row['quantity'].to_f + calculate_total_quantity_by_hsn(items, grouped_hsn_row[:hsn])
-            grouped_hsn_row['amount'] = grouped_hsn_row['amount'].to_f + amount.to_f
-            grouped_hsn_row['cgst_amount'] = grouped_hsn_row['cgst_amount'].to_f + cgst_amount.to_f
-            grouped_hsn_row['sgst_amount'] = grouped_hsn_row['sgst_amount'].to_f + sgst_amount.to_f
-            grouped_hsn_row[:invoices].append({id: invoice.id, invoice_no: invoice.invoice_no})
-            break
-          end
-        end
+        current_hsn = hsn_row['hsn'].to_s
+        current_amount = hsn_row['amount'].nil? ? 0: hsn_row['amount'].to_f
+        current_cgst_amount = hsn_row['cgst_amount'].nil? ? 0: hsn_row['cgst_amount'].to_f
+        current_sgst_amount = hsn_row['sgst_amount'].nil? ? 0: hsn_row['sgst_amount'].to_f
+        current_taxable_value = hsn_row['taxable_value']
+        current_total_tax_amount = hsn_row['total_tax_amount']
 
         if match_found.eql?(false) || grouped_hsn_summary.length.eql?(0)
           # Add the unmatched hsn as a new entry in grouped hsn
-          amount = 0
-          cgst_amount = 0
-          sgst_amount = 0
-
-          if hsn_row['amount'].nil?.eql?false
-            amount = hsn_row['amount']
-          end
-
-          if hsn_row['cgst_amount'].nil?.eql?false
-            cgst_amount = hsn_row['cgst_amount']
-          end
-
-          if hsn_row['sgst_amount'].nil?.eql?false
-            sgst_amount = hsn_row['sgst_amount']
-          end
           grouped_hsn_summary.append({
-                                         hsn: hsn_row['hsn'].to_s,
-                                         taxable_value: hsn_row['taxable_value'].to_f,
-                                         total_tax_amount: hsn_row['total_tax_amount'].to_f,
-                                         amount: amount,
-                                         cgst_amount: cgst_amount,
-                                         sgst_amount: sgst_amount,
-                                         quantity: calculate_total_quantity_by_hsn(items, hsn_row['hsn']),
-                                         invoices: [{id: invoice.id, invoice_no: invoice.invoice_no}]
+                                         hsn: current_hsn,
+                                         amount: current_amount,
+                                         cgst_amount: current_cgst_amount,
+                                         sgst_amount: current_sgst_amount,
+                                         taxable_value: current_taxable_value,
+                                         total_tax_amount: current_total_tax_amount,
+                                         quantity: calculate_total_quantity_by_hsn(items, current_hsn),
+                                         invoices: []
                                      })
+        end
+
+        grouped_hsn_summary.each do |grouped_hsn_row|
+          if grouped_hsn_row[:hsn].eql?(current_hsn)
+            match_found = true
+
+            grouped_hsn_row['amount'] = grouped_hsn_row['amount'].to_f + current_amount
+            grouped_hsn_row['cgst_amount'] = grouped_hsn_row['cgst_amount'].to_f + current_cgst_amount
+            grouped_hsn_row['sgst_amount'] = grouped_hsn_row['sgst_amount'].to_f + current_sgst_amount
+            grouped_hsn_row['taxable_value'] = grouped_hsn_row['taxable_value'].to_f + current_taxable_value
+            grouped_hsn_row['total_tax_amount'] = grouped_hsn_row['total_tax_amount'].to_f + current_total_tax_amount
+            grouped_hsn_row['quantity'] = grouped_hsn_row['quantity'].to_f + calculate_total_quantity_by_hsn(items, grouped_hsn_row[:hsn])
+            grouped_hsn_row[:invoices].append({id: invoice.id, invoice_no: invoice.invoice_no})
+            break
+          end
         end
       end
     end
@@ -267,7 +245,7 @@ class InvoicesController < ApplicationController
     if items.length > 0
       items.each do |item|
         if item['item_hsn'].nil?.eql?(false )
-          if item['item_hsn'].to_s.eql?(hsn.to_s)
+          if item['item_hsn'].to_s.eql?(hsn)
             total_quantity = total_quantity.to_f + item['total_quantity'].to_f
           end
         end
