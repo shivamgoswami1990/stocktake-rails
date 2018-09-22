@@ -124,7 +124,14 @@ class InvoicesController < ApplicationController
   # GET /historical_data
   def historical_data
     if params[:by_month].eql?('true')
-      render :json => Invoice.all.group_by {|t| t.created_at.month}
+      starting_month = Invoice.first[:created_at].to_date.to_s.split('-')[1].to_i
+      last_month = Invoice.last[:created_at].to_date.to_s.split('-')[1].to_i
+
+      grouped_invoices=  {}
+      for i in starting_month..last_month
+        grouped_invoices[i] = Invoice.by_month(i, strict: true, field: 'invoice_date', year: 2018)
+      end
+      render :json => grouped_invoices
     end
   end
 
