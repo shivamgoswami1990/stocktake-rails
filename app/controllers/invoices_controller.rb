@@ -131,7 +131,7 @@ class InvoicesController < ApplicationController
   # GET /hsn_summary_by_date?month=Jan
   def hsn_summary_by_date
     # Get invoices by month, fortnight or date and group taxable values by HSN no types
-    invoices = Company.find(params[:company_id]).invoices
+    invoices = Company.find(params[:company_id]).invoices.order(invoice_no_as_int: :asc)
 
     if params[:month]
       invoice_list = invoices.by_month(params[:month], strict: true, field: 'invoice_date', year: params[:year])
