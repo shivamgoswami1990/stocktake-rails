@@ -21,7 +21,7 @@ class InvoicesController < ApplicationController
   # GET /recent_invoices
   def recent_invoices
     # Return last k invoices based on query parameters
-    k = 5
+    k = 10
     by_user_id = params[:by_user_id]
     by_not_user_id = params[:by_not_user_id]
 
