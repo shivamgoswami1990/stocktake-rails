@@ -25,5 +25,16 @@ Things you may want to cover:
     - puma -C config/puma.rb -d
     - RAILS_ENV=production rails db:drop DISABLE_DATABASE_ENVIRONMENT_CHECK=1
     - Edit credentials : 'EDITOR="nano" bin/rails credentials:edit'
-    - 
+    - bundle exec sidekiq -L log/sidekiq.log -d -e production
+    - sudo service nginx start
     
+* Renew SSL certificate from Let's encrypt
+    - sudo certbot delete
+    - sudo certbot certonly --manual  -d *.jkaromaticsandperfumers.online -d jkaromaticsandperfumers.online --preferred-challenges dns-01 --server https://acme-v02.api.letsencrypt.org/directory    
+    
+* Backup production DB
+    - pg_dump -U ubuntu -f jkbackup.dump jkstocktake -Ft --pass
+    
+* Restore/copy production DB to local
+    - sudo scp -i "jk-mac.pem" ubuntu@13.126.46.210:/home/ubuntu/jkbackup.dump ./
+    - pg_restore -d jkstocktake -U postgres -C jkbackup.dump --no-acl
