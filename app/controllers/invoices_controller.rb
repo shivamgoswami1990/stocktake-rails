@@ -121,17 +121,91 @@ class InvoicesController < ApplicationController
     end
   end
 
-  # GET /historical_data
+  # GET /historical_data?date_list=[[2,2018],[4,2018]]
   def historical_data
-    if params[:by_month].eql?('true')
-      starting_month = Invoice.first[:created_at].to_date.to_s.split('-')[1].to_i
-      last_month = Invoice.last[:created_at].to_date.to_s.split('-')[1].to_i
+    print("\n\n")
+    print(params[:date_list])
+    print("\n\n")
 
-      grouped_invoices=  {}
-      for i in starting_month..last_month
-        grouped_invoices[i] = Invoice.by_month(i, strict: true, field: 'invoice_date', year: 2018)
+    if params[:date_list]
+      # Define constants before calculating count & sum for each company
+      # 1. JK Delhi, 2. Mazic, 3. JK Loni
+
+      # Convert date list to an array
+      date_list = JSON.parse(params[:date_list])
+      summary = []
+
+      date_list.each do |date_item|
+        invoices = Invoice.by_month(date_item[0], strict: true, field: 'invoice_date', year: date_item[1])
+
+        first_company_count = 0
+        second_company_count = 0
+        third_company_count = 0
+        first_company_revenue = 0.to_f
+        second_company_revenue = 0.to_f
+        third_company_revenue = 0.to_f
+
+        # Go through all invoices for this month
+        invoices.each do |invoice|
+          if invoice.company_id.eql?(1)
+            first_company_count += 1
+
+            # Check if hsn_summary exists
+            if !invoice[:tax_summary].eql?(nil)
+              if !invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
+                first_company_revenue += invoice[:tax_summary]['hsn_summary_total']['total_taxable_value'].to_f
+              end
+            end
+          end
+
+          if invoice.company_id.eql?(2)
+            second_company_count += 1
+
+            # Check if hsn_summary exists
+            if !invoice[:tax_summary].eql?(nil)
+              if !invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
+                second_company_revenue += invoice[:tax_summary]['hsn_summary_total']['total_taxable_value'].to_f
+              end
+            end
+          end
+
+          if invoice.company_id.eql?(3)
+            third_company_count += 1
+
+            # Check if hsn_summary exists
+            if !invoice[:tax_summary].eql?(nil)
+              if !invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
+                third_company_revenue += invoice[:tax_summary]['hsn_summary_total']['total_taxable_value'].to_f
+              end
+            end
+          end
+        end
+
+        # Append the results of this month to the summary
+        summary.append({
+            month: date_item[0],
+            year: date_item[1],
+            result: [
+                {
+                    'company_id': 1,
+                    'invoice_count': first_company_count,
+                    'invoice_revenue': first_company_revenue
+                },
+                {
+                    'company_id': 2,
+                    'invoice_count': second_company_count,
+                    'invoice_revenue': second_company_revenue
+                },
+                {
+                    'company_id': 3,
+                    'invoice_count': third_company_count,
+                    'invoice_revenue': third_company_revenue
+                }
+            ]
+                       })
       end
-      render :json => grouped_invoices
+
+      render :json => summary
     end
   end
 
