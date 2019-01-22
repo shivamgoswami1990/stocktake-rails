@@ -112,10 +112,14 @@ class InvoicesController < ApplicationController
 
   # GET /past_invoices?search_term=Jane
   def past_invoices
+    # Check if the parameter is an integer. If yes, then find by invoice_as_int. Else do a pg_search
     if params[:search_term]
-
-      results = Invoice.search_by_company_customer_id(params[:search_term])
-      render :json => results
+      if is_number?( params[:search_term] )
+        render :json => Invoice.where(invoice_no_as_int: params[:search_term].to_i)
+      else
+        results = Invoice.search_by_company_customer_id(params[:search_term])
+        render :json => results
+      end
     else
       render json: {:'data' => 'search_term need to be present in the request'}, status: 400
     end
@@ -353,5 +357,10 @@ class InvoicesController < ApplicationController
       end
     end
     return total_quantity
+  end
+
+  # Check if string is a number
+  def is_number? string
+    true if Float(string) rescue false
   end
 end
