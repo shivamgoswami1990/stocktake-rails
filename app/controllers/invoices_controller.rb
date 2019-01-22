@@ -123,9 +123,6 @@ class InvoicesController < ApplicationController
 
   # GET /historical_data?date_list=[[2,2018],[4,2018]]
   def historical_data
-    print("\n\n")
-    print(params[:date_list])
-    print("\n\n")
 
     if params[:date_list]
       # Define constants before calculating count & sum for each company
@@ -212,69 +209,78 @@ class InvoicesController < ApplicationController
   # GET /hsn_summary_by_date?month=Jan
   def hsn_summary_by_date
     # Get invoices by month, fortnight or date and group taxable values by HSN no types
-    invoices = Company.find(params[:company_id]).invoices.order(invoice_no_as_int: :asc)
+    invoices = Invoice.where(company_id: params[:company_id]).order(invoice_no_as_int: :asc)
 
     if params[:month]
       invoice_list = invoices.by_month(params[:month], strict: true, field: 'invoice_date', year: params[:year])
     elsif params[:quarter]
       invoice_list = invoices.by_quarter(params[:quarter], strict: true, field: 'invoice_date', year: params[:year])
     end
-    grouped_hsn_summary = []
 
+    # Only select the required columns
+    invoice_list = invoice_list.select(:id, :invoice_no, :item_array, :tax_summary, :user_id, :company_id, :customer_id)
+
+    grouped_hsn_summary = []
     invoice_list.each do |invoice|
       items = invoice['item_array']
       invoice['tax_summary']['hsn_summary'].each do |hsn_row|
-        # For each hsn go through the grouped hsn_list
-        match_found = false
         current_hsn = hsn_row['hsn'].to_s
         current_amount = hsn_row['amount'].nil? ? 0: hsn_row['amount'].to_f
         current_cgst_amount = hsn_row['cgst_amount'].nil? ? 0: hsn_row['cgst_amount'].to_f
         current_sgst_amount = hsn_row['sgst_amount'].nil? ? 0: hsn_row['sgst_amount'].to_f
         current_taxable_value = hsn_row['taxable_value']
         current_total_tax_amount = hsn_row['total_tax_amount']
+        match_found = false
+        match_index = nil
 
-        if grouped_hsn_summary.length.eql?(0)
-          # Add the unmatched hsn as a new entry in grouped hsn
+        # Add the first item to grouped_hsn_summary
+        if grouped_hsn_summary.length.eql?0
           grouped_hsn_summary.append({
-                                         hsn: current_hsn,
-                                         amount: current_amount,
-                                         cgst_amount: current_cgst_amount,
-                                         sgst_amount: current_sgst_amount,
-                                         taxable_value: current_taxable_value,
-                                         total_tax_amount: current_total_tax_amount,
-                                         quantity: calculate_total_quantity_by_hsn(items, current_hsn),
-                                         invoices: [{id: invoice.id, invoice_no: invoice.invoice_no}]
-                                     })
-        end
+                                        hsn: current_hsn,
+                                        amount: current_amount,
+                                        cgst_amount: current_cgst_amount,
+                                        sgst_amount: current_sgst_amount,
+                                        taxable_value: current_taxable_value,
+                                        total_tax_amount: current_total_tax_amount,
+                                        quantity: calculate_total_quantity_by_hsn(items, current_hsn),
+                                        invoices: [{id: invoice.id, invoice_no: invoice.invoice_no}]
+                                    })
+        else
+          # Grouped_hsn_summary must have one or more items. Loop through & add with the matched HSN
+          grouped_hsn_summary.each do |grouped_hsn_row|
+            if grouped_hsn_row[:hsn].to_s.eql?(current_hsn)
+              match_found = true
+              match_index = grouped_hsn_summary.index{ |item| item[:hsn] == current_hsn }
+              break
+            end
+          end
 
-        grouped_hsn_summary.each do |grouped_hsn_row|
-          if grouped_hsn_row[:hsn].eql?(current_hsn)
-            match_found = true
+          if match_found
+            # Add quantities together if a match was found
+            grouped_hsn_summary[match_index]['amount'] = grouped_hsn_summary[match_index]['amount'].to_f + current_amount
+            grouped_hsn_summary[match_index]['cgst_amount'] = grouped_hsn_summary[match_index]['cgst_amount'].to_f + current_cgst_amount
+            grouped_hsn_summary[match_index]['sgst_amount'] = grouped_hsn_summary[match_index]['sgst_amount'].to_f + current_sgst_amount
+            grouped_hsn_summary[match_index]['taxable_value'] = grouped_hsn_summary[match_index]['taxable_value'].to_f + current_taxable_value
+            grouped_hsn_summary[match_index]['total_tax_amount'] = grouped_hsn_summary[match_index]['total_tax_amount'].to_f + current_total_tax_amount
+            grouped_hsn_summary[match_index]['quantity'] = grouped_hsn_summary[match_index]['quantity'].to_f + calculate_total_quantity_by_hsn(items, grouped_hsn_summary[match_index][:hsn])
+            grouped_hsn_summary[match_index][:invoices].append({id: invoice.id, invoice_no: invoice.invoice_no})
 
-            grouped_hsn_row['amount'] = grouped_hsn_row['amount'].to_f + current_amount
-            grouped_hsn_row['cgst_amount'] = grouped_hsn_row['cgst_amount'].to_f + current_cgst_amount
-            grouped_hsn_row['sgst_amount'] = grouped_hsn_row['sgst_amount'].to_f + current_sgst_amount
-            grouped_hsn_row['taxable_value'] = grouped_hsn_row['taxable_value'].to_f + current_taxable_value
-            grouped_hsn_row['total_tax_amount'] = grouped_hsn_row['total_tax_amount'].to_f + current_total_tax_amount
-            grouped_hsn_row['quantity'] = grouped_hsn_row['quantity'].to_f + calculate_total_quantity_by_hsn(items, grouped_hsn_row[:hsn])
-            grouped_hsn_row[:invoices].append({id: invoice.id, invoice_no: invoice.invoice_no})
-            break
+          else
+            # Add a new record to the grouped_hsn_summary
+            grouped_hsn_summary.append({
+                                          hsn: current_hsn,
+                                          amount: current_amount,
+                                          cgst_amount: current_cgst_amount,
+                                          sgst_amount: current_sgst_amount,
+                                          taxable_value: current_taxable_value,
+                                          total_tax_amount: current_total_tax_amount,
+                                          quantity: calculate_total_quantity_by_hsn(items, current_hsn),
+                                          invoices: [{id: invoice.id, invoice_no: invoice.invoice_no}]
+                                      })
           end
         end
 
-        if match_found.eql?(false)
-          # Add the unmatched hsn as a new entry in grouped hsn
-          grouped_hsn_summary.append({
-                                         hsn: current_hsn,
-                                         amount: current_amount,
-                                         cgst_amount: current_cgst_amount,
-                                         sgst_amount: current_sgst_amount,
-                                         taxable_value: current_taxable_value,
-                                         total_tax_amount: current_total_tax_amount,
-                                         quantity: calculate_total_quantity_by_hsn(items, current_hsn),
-                                         invoices: [{id: invoice.id, invoice_no: invoice.invoice_no}]
-                                     })
-        end
+
       end
     end
 

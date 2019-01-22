@@ -2,11 +2,11 @@ class Invoice < ApplicationRecord
   # Use scope function from ./app/models/concerns
   include ScopeGenerator, PgSearch
   pg_search_scope :search_by_item_array, :against => :item_array
-  pg_search_scope :search_by_company_customer_id, :using => {:tsearch => {:any_word => true}},
+  pg_search_scope :search_by_company_customer_id,
                   :associated_against => {
                       :customer => [:name, :st_address, :city, :state_name],
                       :company => [:name, :st_address, :city, :state_name]
-                  }, :against => [:invoice_no, :invoice_no_as_int]
+                  }, :against => [:invoice_no_as_int]
   Invoice.new.createScope(Invoice)
 
   belongs_to :user
