@@ -261,12 +261,12 @@ class InvoicesController < ApplicationController
 
           if match_found
             # Add quantities together if a match was found
-            grouped_hsn_summary[match_index]['amount'] = grouped_hsn_summary[match_index]['amount'].to_f + current_amount
-            grouped_hsn_summary[match_index]['cgst_amount'] = grouped_hsn_summary[match_index]['cgst_amount'].to_f + current_cgst_amount
-            grouped_hsn_summary[match_index]['sgst_amount'] = grouped_hsn_summary[match_index]['sgst_amount'].to_f + current_sgst_amount
-            grouped_hsn_summary[match_index]['taxable_value'] = grouped_hsn_summary[match_index]['taxable_value'].to_f + current_taxable_value
-            grouped_hsn_summary[match_index]['total_tax_amount'] = grouped_hsn_summary[match_index]['total_tax_amount'].to_f + current_total_tax_amount
-            grouped_hsn_summary[match_index]['quantity'] = grouped_hsn_summary[match_index]['quantity'].to_f + calculate_total_quantity_by_hsn(items, grouped_hsn_summary[match_index][:hsn])
+            grouped_hsn_summary[match_index][:amount] = grouped_hsn_summary[match_index][:amount].to_f + current_amount
+            grouped_hsn_summary[match_index][:cgst_amount] = grouped_hsn_summary[match_index][:cgst_amount].to_f + current_cgst_amount
+            grouped_hsn_summary[match_index][:sgst_amount] = grouped_hsn_summary[match_index][:sgst_amount].to_f + current_sgst_amount
+            grouped_hsn_summary[match_index][:taxable_value] = grouped_hsn_summary[match_index][:taxable_value].to_f + current_taxable_value
+            grouped_hsn_summary[match_index][:total_tax_amount] = grouped_hsn_summary[match_index][:total_tax_amount].to_f + current_total_tax_amount
+            grouped_hsn_summary[match_index][:quantity] = grouped_hsn_summary[match_index][:quantity].to_f + calculate_total_quantity_by_hsn(items, grouped_hsn_summary[match_index][:hsn])
             grouped_hsn_summary[match_index][:invoices].append({id: invoice.id, invoice_no: invoice.invoice_no})
 
           else
