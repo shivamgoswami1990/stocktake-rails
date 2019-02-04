@@ -291,6 +291,24 @@ class InvoicesController < ApplicationController
     render :json => grouped_hsn_summary
   end
 
+  # GET /invoices_by_month?month=2&year=2019
+  def invoices_by_month
+    if params[:month] and params[:year]
+      render :json => Invoice.by_month(params[:month], strict: true, field: 'invoice_date', year: params[:year])
+    else
+      render :json => {}
+    end
+  end
+
+  # GET /invoices_between_dates?from_date=2019-2-1&to_date=2019-2-4
+  def invoices_between_dates
+    if params[:from_date] and params[:to_date]
+      render :json => Invoice.between_times(params[:from_date].to_time, params[:to_date].to_time, strict: true, field: 'invoice_date')
+    else
+      render :json => {}
+    end
+  end
+
   # POST /invoices
   def create
 
