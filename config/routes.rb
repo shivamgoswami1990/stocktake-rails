@@ -19,8 +19,7 @@ Rails.application.routes.draw do
   get 'past_invoices' => 'invoices#past_invoices'
   post 'historical_data' => 'invoices#historical_data'
   get 'hsn_summary_by_date' => 'invoices#hsn_summary_by_date'
-  get 'invoices_by_month' => 'invoices#invoices_by_month'
-  get 'invoices_between_dates' => 'invoices#invoices_between_dates'
+  get 'invoice_list' => 'invoices#invoice_list'
 
   get 'unread_notifications' => 'notifications#unread_notifications'
   get 'unread_notification_count' => 'notifications#unread_notification_count'

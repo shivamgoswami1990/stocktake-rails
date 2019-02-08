@@ -15,7 +15,7 @@ class InvoicesController < ApplicationController
   # GET /invoices
   def index
     @invoices = apply_scopes(Invoice).all
-    render :json => @invoices.order(created_at: :desc)
+    render :json => @invoices.order(invoice_no_as_int: :desc)
   end
 
   # GET /recent_invoices
@@ -291,22 +291,34 @@ class InvoicesController < ApplicationController
     render :json => grouped_hsn_summary
   end
 
-  # GET /invoices_by_month?month=2&year=2019
-  def invoices_by_month
+  # GET /invoice_list?by_customer_id=1&month=2&year=2019
+  def invoice_list
+    # Filter invoices by date / month first
+    invoices = []
     if params[:month] and params[:year]
-      render :json => Invoice.by_month(params[:month], strict: true, field: 'invoice_date', year: params[:year])
-    else
-      render :json => {}
+      invoices = Invoice.by_month(params[:month], strict: true, field: 'invoice_date', year: params[:year])
+    elsif params[:from_date] and params[:to_date]
+      invoices = Invoice.between_times(params[:from_date].to_time, params[:to_date].to_time, strict: true, field: 'invoice_date')
     end
-  end
 
-  # GET /invoices_between_dates?from_date=2019-2-1&to_date=2019-2-4
-  def invoices_between_dates
-    if params[:from_date] and params[:to_date]
-      render :json => Invoice.between_times(params[:from_date].to_time, params[:to_date].to_time, strict: true, field: 'invoice_date')
-    else
-      render :json => {}
+    # Filter invoices by company and/or customer
+    if params[:by_company_id]
+      if invoices.length.eql?0
+        invoices = Invoice.where(company_id: params[:by_company_id])
+      else
+        invoices = invoices.where(company_id: params[:by_company_id])
+      end
     end
+
+    if params[:by_customer_id]
+      if invoices.length.eql?0
+        invoices = Invoice.where(customer_id: params[:by_customer_id])
+      else
+        invoices = invoices.where(customer_id: params[:by_customer_id])
+      end
+    end
+
+    render :json => invoices.order(invoice_no_as_int: :desc)
   end
 
   # POST /invoices
