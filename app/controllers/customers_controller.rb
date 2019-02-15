@@ -91,18 +91,32 @@ class CustomersController < ApplicationController
   # POST /customers
   def create
     # If GSTIN no exists, check if it's unique
-    if customer_params[:gstin_no].present?
+    valid_params = false
+
+    if customer_params[:gstin_no].empty?
+      # If GST no is empty, create the customer
+      valid_params = true
+    else
+      # If GST no exists, then check if unique before creating
       if Customer.find_by_gstin_no(customer_params[:gstin_no])
-        render json: :Conflict, status: 409
+        valid_params = false
       else
-        @customer = Customer.new(customer_params)
-        if @customer.save
-          NotificationJob.perform_later('customer', 'created', @customer.id, current_user)
-          render :json => @customer
-        else
-          render json: :BadRequest, status: 400
-        end
+        valid_params = true
       end
+    end
+
+
+    # Create customer
+    if valid_params
+      @customer = Customer.new(customer_params)
+      if @customer.save
+        NotificationJob.perform_later('customer', 'created', @customer.id, current_user)
+        render :json => @customer, status: 201
+      else
+        render json: :BadRequest, status: 400
+      end
+    else
+      render json: :Conflict, status: 409
     end
   end
 
