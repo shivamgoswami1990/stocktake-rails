@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_22_101606) do
+ActiveRecord::Schema.define(version: 2019_02_21_042007) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -175,6 +175,8 @@ ActiveRecord::Schema.define(version: 2018_09_22_101606) do
     t.json "tokens"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "permissions", default: {"company"=>{"create"=>false, "edit"=>false, "delete"=>false}, "customer"=>{"create"=>false, "edit"=>false, "delete"=>false}, "item"=>{"create"=>false, "edit"=>false, "delete"=>false}, "invoice"=>{"create"=>false, "edit"=>false, "delete"=>false}}
+    t.boolean "is_superuser", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end

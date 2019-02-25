@@ -40,6 +40,7 @@ class UsersController < ApplicationController
   def update
     if @user.update(user_params)
       render :json => @user
+      ActionCable.server.broadcast('user_info', {data: @user})
     else
       render json: :BadRequest, status: 400
     end
