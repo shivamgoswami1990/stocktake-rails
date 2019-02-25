@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_21_042007) do
+ActiveRecord::Schema.define(version: 2019_02_25_230328) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -101,6 +101,7 @@ ActiveRecord::Schema.define(version: 2019_02_21_042007) do
     t.datetime "updated_at", null: false
     t.bigint "last_edited_by_id"
     t.string "sample_comments"
+    t.string "vehicle_no"
     t.index ["company_id"], name: "index_invoices_on_company_id"
     t.index ["customer_id"], name: "index_invoices_on_customer_id"
     t.index ["last_edited_by_id"], name: "index_invoices_on_last_edited_by_id"
