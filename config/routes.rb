@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   get 'invoice_list' => 'invoices#invoice_list'
 
   get 'unread_notifications' => 'notifications#unread_notifications'
+  get 'read_notifications' => 'notifications#read_notifications'
   get 'unread_notification_count' => 'notifications#unread_notification_count'
   put 'mark_notification_as_read' => 'notifications#mark_notification_as_read'
   put 'mark_all_notifications_as_read' => 'notifications#mark_all_notifications_as_read'
