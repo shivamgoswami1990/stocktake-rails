@@ -45,11 +45,34 @@ class CompaniesController < ApplicationController
   def last_created_invoice
     @company = load_company
 
+    invoices = @company.invoices
+    max_no = invoices.maximum('invoice_no_as_int')
+    last_invoice = invoices.where(invoice_no_as_int: max_no)[0]
+
+    # Get last ten invoice nos from the max invoice no
+    five_recent_invoices = []
+    i = 0
+    while (i >= 0)
+      current_invoice = invoices.where(invoice_no_as_int: (max_no-i))[0]
+      if current_invoice.present?
+        five_recent_invoices.push({
+            'invoice_no': current_invoice[:invoice_no],
+            'invoice_date': current_invoice[:invoice_date],
+                                 })
+      end
+
+      if five_recent_invoices.length == 5
+        break
+      end
+      i = i + 1
+    end
+
     if @company
       render :json => {
-          invoice_no: @company.invoices.last[:invoice_no],
-          invoice_date: @company.invoices.last[:invoice_date]
-      } unless @company.invoices.empty?
+          invoice_no: last_invoice[:invoice_no],
+          invoice_date: last_invoice[:invoice_date],
+          five_recent_invoices: five_recent_invoices
+      } unless invoices.empty?
     else
       render :json => {}, status: 404
     end

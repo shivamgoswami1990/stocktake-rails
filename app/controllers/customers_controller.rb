@@ -46,12 +46,15 @@ class CustomersController < ApplicationController
   # GET /customers/1/last_created_invoice
   def last_created_invoice
     @customer = load_customer
-    last_invoice = @customer.invoices.last
+    invoices = @customer.invoices
+    max_no = invoices.maximum('invoice_no_as_int')
+
+    last_invoice = invoices.where(invoice_no_as_int: max_no)[0]
     render :json => {
         invoice_no: last_invoice[:invoice_no],
         invoice_date: last_invoice[:invoice_date],
         company_details: last_invoice[:company_details]
-    } unless @customer.invoices.empty?
+    } unless invoices.empty?
   end
 
   # GET /customers/1/all_ordered_items
