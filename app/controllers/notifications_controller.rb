@@ -25,6 +25,26 @@ class NotificationsController < ApplicationController
     render :json => Notification.where('notifier_id = ? AND read_status = true', params[:user_id]).order(created_at: :desc).limit(params[:item_count])
   end
 
+  # GET /invoice_notifications?invoice_id=1
+  def invoice_notifications
+    if Invoice.exists?(id: params[:invoice_id])
+      notification_objects = Invoice.find(params[:invoice_id]).notification_objects.order(created_at: :desc)
+
+      notifications = []
+      notification_objects.each do |notification_object|
+        notifications.push({
+            'description': notification_object[:description],
+            'created_at': notification_object[:created_at],
+            'updated_at': notification_object[:updated_at],
+            'actor_name': notification_object.notifications.first[:actor_name]
+                           })
+      end
+      render :json => notifications
+    else
+      render json: :NotFound, status: 404
+    end
+  end
+
   # PUT /mark_notification_as_read/1
   def mark_notification_as_read
     Notification.find(params[:id]).update(read_status: true)
