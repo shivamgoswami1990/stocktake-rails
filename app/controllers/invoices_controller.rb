@@ -354,8 +354,12 @@ class InvoicesController < ApplicationController
   # PATCH/PUT /invoices/1
   def update
     if @invoice.update(invoice_params)
-      StatisticCalculationJob.perform_later
-      NotificationJob.perform_later('invoice', 'updated', @invoice.id, current_user)
+      # Only generate notifications, if any attributes changed
+      if @invoice.previous_changes.present?
+        StatisticCalculationJob.perform_later
+        NotificationJob.perform_later('invoice', 'updated', @invoice.id, current_user)
+      end
+
       render :json => @invoice
     else
       render json: :BadRequest, status: 400
