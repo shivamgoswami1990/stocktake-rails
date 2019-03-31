@@ -68,12 +68,13 @@ class InvoicesController < ApplicationController
   def previous_and_next_invoice
     if params[:for_invoice_no_as_int] and params[:company_id]
       render :json => {
-          :'previous_invoice' => Invoice.where('invoice_no_as_int < ? AND company_id = ?',
+          :'previous_invoice' => Invoice.where('invoice_no_as_int < ? AND company_id = ? AND financial_year = ?',
                                                params[:for_invoice_no_as_int],
-                                               params[:company_id]).order('invoice_no_as_int DESC').first,
-          :'next_invoice' => Invoice.where('invoice_no_as_int > ? AND company_id = ?',
+                                               params[:company_id], params[:financial_year])
+                                     .order('invoice_no_as_int DESC').first,
+          :'next_invoice' => Invoice.where('invoice_no_as_int > ? AND company_id = ?  AND financial_year = ?',
                                            params[:for_invoice_no_as_int],
-                                           params[:company_id]).order('invoice_no_as_int ASC').first
+                                           params[:company_id], params[:financial_year]).order('invoice_no_as_int ASC').first
       }
     else
       render json: {:'data' => 'for_invoice_no_as_int and company_id need to be present in the request'}, status: 400
