@@ -332,10 +332,9 @@ class InvoicesController < ApplicationController
 
     # Check if invoice no is unique for a company
     if invoice_params[:invoice_no]
-
       # Search invoice table for this company_id & invoice no for unique invoice nos for a company
-      if (Invoice.where('company_id = ? AND invoice_no = ?', invoice_params[:company_id],
-                        invoice_params[:invoice_no].to_s).count).eql?(0)
+      if (Invoice.where('company_id = ? AND invoice_no = ? AND financial_year = ?', invoice_params[:company_id],
+                        invoice_params[:invoice_no].to_s, invoice_params[:financial_year]).count).eql?(0)
         @invoice = Invoice.create(invoice_params)
         if @invoice.save
           StatisticCalculationJob.perform_later
