@@ -17,7 +17,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
   config.cache_store = :redis_cache_store, {driver: :hiredis, url: "redis://127.0.0.1:6379/0"}
 
-  # Store uploaded files on the local file system (see config/storage.yml for options)
+  # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
   # Print deprecation notices to the Rails logger.
@@ -33,4 +33,11 @@ Rails.application.configure do
   config.action_cable.mount_path = '/cable'
   config.action_cable.url = 'wss://localhost:3000/cable'
   config.action_cable.allowed_request_origins = [/http:\/\/*/, /https:\/\/*/]
+
+  # Raises error for missing translations.
+  # config.action_view.raise_on_missing_translations = true
+
+  # Use an evented file watcher to asynchronously detect changes in source code,
+  # routes, locales, etc. This feature depends on the listen gem.
+  config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 end

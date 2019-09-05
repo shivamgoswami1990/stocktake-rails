@@ -1,12 +1,15 @@
 class Item < ApplicationRecord
-  after_commit :bust_item_cache
+  paginates_per 10
 
   # Use scope function from ./app/models/concerns
-  include ScopeGenerator
+  include ScopeGenerator, PgSearch::Model
   Item.new.createScope(Item)
 
-  def bust_item_cache
-    Rails.cache.redis.set("items", Item.all.order('name ASC').to_json)
-    Rails.cache.redis.set("items/" + self.id.to_s, self.to_json)
-  end
+  # pg_search
+  pg_search_scope :search_item, against: {
+      name: 'A',
+      series: 'B'
+  }, using: {
+      tsearch: { prefix: true }
+  }
 end

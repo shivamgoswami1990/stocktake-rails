@@ -2,8 +2,8 @@ class InvoicesController < ApplicationController
 
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
-  before_action :authenticate_user!
-  before_action :load_invoice, only: [:show, :edit, :update, :destroy]
+  #before_action :authenticate_user!
+  before_action :load_invoice, only: [:show, :update, :destroy]
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
@@ -12,31 +12,36 @@ class InvoicesController < ApplicationController
 
   #//////////////////////////////////////////// REST API //////////////////////////////////////////////////////////////
 
-  # GET /invoices
+  # GET /invoices?financial_year=2018-19&page_no=4
+  # 10 records per page by default. Set in the model.
   def index
-    @invoices = apply_scopes(Invoice).all
-    render :json => @invoices.order(invoice_no_as_int: :desc)
+    if params[:search_term]
+      invoices = Invoice.search_by_company_customer_id(params[:search_term])
+    else
+      invoices = apply_scopes(Invoice).all
+    end
+
+    result = filter_invoices_fy(invoices.page(params[:page_no]).order(invoice_no_as_int: :desc))
+    render :json => {
+        data: result,
+        total_pages: result.total_pages
+    }
   end
 
-  # GET /recent_invoices
+  # GET /recent_invoices?by_user_id=2&financial_year=2019-20
   def recent_invoices
     # Return last k invoices based on query parameters
     k = 10
     by_user_id = params[:by_user_id]
-    by_not_user_id = params[:by_not_user_id]
 
     # Return invoices based on query params
     if by_user_id
-      if User.exists?(by_user_id)
-        user = User.find(by_user_id)
-        render :json => user.invoices.order(created_at: :desc).limit(k)
-      else
-        render :json => {message: 'User does not exist'}, status: :not_found
-      end
-    elsif by_not_user_id
-      render :json => Invoice.where.not(user_id: by_not_user_id).order(created_at: :desc).limit(k)
+      render :json => {
+          yours: filter_invoices_fy(Invoice.where(user_id: by_user_id).order(created_at: :desc).limit(k)),
+          others: filter_invoices_fy(Invoice.where.not(user_id: by_user_id).order(created_at: :desc).limit(k)),
+      }
     else
-      render :json => Invoice.all.order(created_at: :desc).limit(k)
+      render :json => {message: 'User does not exist'}, status: :not_found
     end
   end
 
@@ -52,26 +57,17 @@ class InvoicesController < ApplicationController
 
   # GET /invoices/1
   def show
-    cached_invoice = Rails.cache.redis.get("invoices/" + params[:id].to_s)
-
-    if cached_invoice
-      @invoice = JSON.parse(cached_invoice)
-    else
-      @invoice = load_invoice
-      Rails.cache.redis.set("invoices/" + params[:id].to_s, @invoice.to_json)
-    end
-
+    @invoice = load_invoice
     render :json => @invoice
   end
 
-  # GET /previous_and_next_invoice?for_invoice_no_as_int=1&company_id=1
+  # GET /previous_and_next_invoice?for_invoice_no_as_int=1&company_id=1&financial_year=2019-20
   def previous_and_next_invoice
     if params[:for_invoice_no_as_int] and params[:company_id]
       render :json => {
           :'previous_invoice' => Invoice.where('invoice_no_as_int < ? AND company_id = ? AND financial_year = ?',
                                                params[:for_invoice_no_as_int],
-                                               params[:company_id], params[:financial_year])
-                                     .order('invoice_no_as_int DESC').first,
+                                               params[:company_id], params[:financial_year]).order('invoice_no_as_int DESC').first,
           :'next_invoice' => Invoice.where('invoice_no_as_int > ? AND company_id = ?  AND financial_year = ?',
                                            params[:for_invoice_no_as_int],
                                            params[:company_id], params[:financial_year]).order('invoice_no_as_int ASC').first
@@ -82,11 +78,11 @@ class InvoicesController < ApplicationController
 
   end
 
-  # GET /previous_ordered_item_search_for_customer?customer_id=1&item_name=Amber
+  # GET /previous_ordered_item_search_for_customer?customer_id=15&item_name=s&financial_year=2019-20
   def previous_ordered_item_search_for_customer
     if params[:customer_id] and params[:item_name]
 
-      results = Customer.find(params[:customer_id]).invoices.search_by_item_array(params[:item_name]).pluck(:item_array, :created_at)
+      results = filter_invoices_fy(Customer.find(params[:customer_id]).invoices).search_by_item_array(params[:item_name]).pluck(:item_array, :created_at)
 
       ordered_items = []
 
@@ -203,8 +199,7 @@ class InvoicesController < ApplicationController
                     'invoice_count': third_company_count,
                     'invoice_revenue': third_company_revenue
                 }
-            ]
-                       })
+            ]})
       end
 
       render :json => summary
@@ -377,6 +372,15 @@ class InvoicesController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def load_invoice
     @invoice = Invoice.find(params[:id])
+  end
+
+  # Financial year filter for the invoice
+  def filter_invoices_fy(invoices)
+    if params[:financial_year]
+      return invoices.where(financial_year: params[:financial_year])
+    else
+      return invoices
+    end
   end
 
   # Only allow a trusted parameter "white list" through.

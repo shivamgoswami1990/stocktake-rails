@@ -16,30 +16,28 @@ class CustomersController < ApplicationController
   #//////////////////////////////////////////// REST API //////////////////////////////////////////////////////////////
 
   # GET /customers
+  # 10 records per page by default. Set in the model.
   def index
-    cached_customers = Rails.cache.redis.get("customers")
-    if cached_customers
-      @customers = cached_customers
-
+    if params[:search_term]
+      customers = Customer.search_customer(params[:search_term])
     else
-      @customers = apply_scopes(Customer).all
-      Rails.cache.redis.set("customers", @customers.order('name ASC').to_json)
+      customers = apply_scopes(Customer).all
     end
 
-    render :json => @customers
+    if params[:page_no]
+      result = customers.page(params[:page_no])
+    else
+      result = customers
+    end
+    render :json => {
+        data: result,
+        total_records: Customer.count
+    }
   end
 
   # GET /customers/1
   def show
-    cached_customer = Rails.cache.redis.get("customers/" + params[:id].to_s)
-
-    if cached_customer
-      @customer = JSON.parse(cached_customer)
-    else
-      @customer = load_customer
-      Rails.cache.redis.set("customers/" + params[:id].to_s, @customer.to_json)
-    end
-
+    @customer = load_customer
     render :json => @customer
   end
 
@@ -87,7 +85,6 @@ class CustomersController < ApplicationController
   def invoice_sample_comments
     @customer = load_customer
     invoices = @customer.invoices.where.not('sample_comments' => nil).pluck(:sample_comments, :invoice_date)
-
     render :json => invoices
   end
 

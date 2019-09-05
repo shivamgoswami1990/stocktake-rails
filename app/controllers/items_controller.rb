@@ -13,30 +13,28 @@ class ItemsController < ApplicationController
   #//////////////////////////////////////////// REST API //////////////////////////////////////////////////////////////
 
   # GET /items
+  # 10 records per page by default. Set in the model.
   def index
-    cached_items = Rails.cache.redis.get("items")
-    if cached_items
-      @items = cached_items
-
+    if params[:search_term]
+      items = Item.search_item(params[:search_term])
     else
-      @items = apply_scopes(Item).all
-      Rails.cache.redis.set("items", @items.order('name ASC').to_json)
+      items = apply_scopes(Item).all
     end
 
-    render :json => @items
+    if params[:page_no]
+      result = items.page(params[:page_no])
+    else
+      result = items
+    end
+    render :json => {
+        data: result,
+        total_records: Item.count
+    }
   end
 
   # GET /items/1
   def show
-    cached_item = Rails.cache.redis.get("items/" + params[:id].to_s)
-
-    if cached_item
-      @item = JSON.parse(cached_item)
-    else
-      @item = load_item
-      Rails.cache.redis.set("items/" + params[:id].to_s, @item.to_json)
-    end
-
+    @item = load_item
     render :json => @item
   end
 

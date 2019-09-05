@@ -1,12 +1,17 @@
 class Invoice < ApplicationRecord
+  paginates_per 10
+
   # Use scope function from ./app/models/concerns
-  include ScopeGenerator, PgSearch
-  pg_search_scope :search_by_item_array, :against => :item_array
+  include ScopeGenerator, PgSearch::Model
+  pg_search_scope :search_by_item_array,
+                  :against => :item_array,
+                  using: {tsearch: { prefix: true }
+      }
   pg_search_scope :search_by_company_customer_id,
                   :associated_against => {
                       :customer => [:name, :st_address, :city, :state_name],
                       :company => [:name, :st_address, :city, :state_name]
-                  }, :against => [:invoice_no_as_int]
+                  }, :against => [:invoice_no_as_int], using: {tsearch: { prefix: true }}
   Invoice.new.createScope(Invoice)
 
   belongs_to :user

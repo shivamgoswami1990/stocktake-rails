@@ -14,9 +14,15 @@ class UsersController < ApplicationController
 
   #//////////////////////////////////////////// REST API ///////////////////////////////////////////////////////////////
   # GET /users
+  # 10 records per page by default. Set in the model.
   def index
-    @users = apply_scopes(User).all
-    render :json => @users
+    if params[:search_term]
+      users = User.search_user(params[:search_term])
+    else
+      users = apply_scopes(User).all
+    end
+
+    render :json => users.page(params[:page_no])
   end
 
   # GET /users/1

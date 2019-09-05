@@ -1,18 +1,22 @@
 class Customer < ApplicationRecord
-  after_commit :bust_customer_cache
+  paginates_per 10
 
   # Use scope function from ./app/models/concerns
-  include ScopeGenerator
+  include ScopeGenerator, PgSearch::Model
   Customer.new.createScope(Customer)
+
+  # pg_search
+  pg_search_scope :search_customer, against: {
+      name: 'A',
+      st_address: 'B',
+      city: 'C'
+  }, using: {
+      tsearch: { prefix: true }
+  }
 
   # Define enum
   enum freight_type: [:HALF, :FULL]
 
   has_many :invoices, dependent: :destroy
   has_many :notification_objects, as: :entity
-
-  def bust_customer_cache
-    Rails.cache.redis.set("customers", Customer.all.order('name ASC').to_json)
-    Rails.cache.redis.set("customers/" + self.id.to_s, self.to_json)
-  end
 end
