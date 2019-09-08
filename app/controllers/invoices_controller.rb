@@ -107,14 +107,14 @@ class InvoicesController < ApplicationController
     end
   end
 
-  # GET /past_invoices?search_term=Jane
+  # GET /past_invoices?search_term=Jane&financial_year=2018-19
   def past_invoices
     # Check if the parameter is an integer. If yes, then find by invoice_as_int. Else do a pg_search
     if params[:search_term]
       if is_number?( params[:search_term] )
-        render :json => Invoice.where(invoice_no_as_int: params[:search_term].to_i)
+        render :json => filter_invoices_fy(Invoice.where(invoice_no_as_int: params[:search_term].to_i))
       else
-        results = Invoice.search_by_company_customer_id(params[:search_term])
+        results = filter_invoices_fy(Invoice.search_by_company_customer_id(params[:search_term]))
         render :json => results
       end
     else
