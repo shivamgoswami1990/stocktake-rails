@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
   before_action :authenticate_user!
-  before_action :load_user, only: [:show, :edit, :update, :destroy]
+  before_action :load_user, only: [:show, :edit, :change_user_password, :update, :destroy]
 
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
@@ -50,6 +50,13 @@ class UsersController < ApplicationController
     else
       render json: :BadRequest, status: 400
     end
+  end
+
+  # PATCH/PUT /change_user_password?id=1&password=aus12345
+  def change_user_password
+    @user.password = params[:password]
+    @user.save
+    render :json => @user
   end
 
   # DELETE /users/1

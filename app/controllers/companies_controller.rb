@@ -25,7 +25,7 @@ class CompaniesController < ApplicationController
     render :json => @company
   end
 
-  # GET /companies/1/last_created_invoice
+  # GET /companies/1/last_created_invoice?financial_year=2018-19
   def last_created_invoice
     @company = load_company
 

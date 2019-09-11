@@ -2,7 +2,7 @@ class InvoicesController < ApplicationController
 
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
-  #before_action :authenticate_user!
+  before_action :authenticate_user!
   before_action :load_invoice, only: [:show, :update, :destroy]
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
@@ -112,14 +112,14 @@ class InvoicesController < ApplicationController
     end
   end
 
-  # GET /past_invoices?search_term=Jane
+  # GET /past_invoices?search_term=Jane&financial_year=2018-19
   def past_invoices
     # Check if the parameter is an integer. If yes, then find by invoice_as_int. Else do a pg_search
     if params[:search_term]
-      if is_number?( params[:search_term])
-        render :json => Invoice.where(invoice_no_as_int: params[:search_term].to_i)
+      if is_number?( params[:search_term] )
+        render :json => filter_invoices_fy(Invoice.where(invoice_no_as_int: params[:search_term].to_i))
       else
-        results = Invoice.search_by_company_customer_id(params[:search_term])
+        results = filter_invoices_fy(Invoice.search_by_company_customer_id(params[:search_term]))
         render :json => results
       end
     else
@@ -154,8 +154,8 @@ class InvoicesController < ApplicationController
             first_company_count += 1
 
             # Check if hsn_summary exists
-            if !invoice[:tax_summary].eql?(nil)
-              if !invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
+            unless invoice[:tax_summary].eql?(nil)
+              unless invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
                 first_company_revenue += invoice[:tax_summary]['hsn_summary_total']['total_taxable_value'].to_f
               end
             end
@@ -165,8 +165,8 @@ class InvoicesController < ApplicationController
             second_company_count += 1
 
             # Check if hsn_summary exists
-            if !invoice[:tax_summary].eql?(nil)
-              if !invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
+            unless invoice[:tax_summary].eql?(nil)
+              unless invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
                 second_company_revenue += invoice[:tax_summary]['hsn_summary_total']['total_taxable_value'].to_f
               end
             end
@@ -176,8 +176,8 @@ class InvoicesController < ApplicationController
             third_company_count += 1
 
             # Check if hsn_summary exists
-            if !invoice[:tax_summary].eql?(nil)
-              if !invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
+            unless invoice[:tax_summary].eql?(nil)
+              unless invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
                 third_company_revenue += invoice[:tax_summary]['hsn_summary_total']['total_taxable_value'].to_f
               end
             end
