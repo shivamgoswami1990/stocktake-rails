@@ -21,7 +21,12 @@ class InvoicesController < ApplicationController
       invoices = apply_scopes(Invoice).all
     end
 
-    result = filter_invoices_fy(invoices.page(params[:page_no]).order(invoice_no_as_int: :desc))
+    if params[:page_no]
+      result = filter_invoices_fy(invoices.page(params[:page_no]).order(invoice_no_as_int: :desc))
+    else
+      result = filter_invoices_fy(invoices.order(invoice_no_as_int: :desc))
+    end
+
     render :json => {
         data: result,
         total_pages: result.total_pages
@@ -111,7 +116,7 @@ class InvoicesController < ApplicationController
   def past_invoices
     # Check if the parameter is an integer. If yes, then find by invoice_as_int. Else do a pg_search
     if params[:search_term]
-      if is_number?( params[:search_term] )
+      if is_number?( params[:search_term])
         render :json => Invoice.where(invoice_no_as_int: params[:search_term].to_i)
       else
         results = Invoice.search_by_company_customer_id(params[:search_term])
