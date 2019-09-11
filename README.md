@@ -38,3 +38,10 @@ Things you may want to cover:
 * Restore/copy production DB to local
     - sudo scp -i "jk-mac.pem" ubuntu@13.126.46.210:/home/ubuntu/jkbackup.dump ./
     - pg_restore -d jkstocktake -U postgres -C jkbackup.dump --no-acl
+    
+* Update counter for all invoice count
+    - From console type - Invoice.counter_culture_fix_counts
+    
+* Refresh statistic count from console
+    - s = StatisticsController.new
+    - s.refresh_statistics()

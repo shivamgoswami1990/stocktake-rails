@@ -1,7 +1,7 @@
 class NotificationJob < ApplicationJob
   queue_as :default
 
-  def perform(entity_type, entity_action, entity_id, actor)
+  def perform(entity_type, entity_action, entity_id, actor, *args)
     # Define a entity description dictionary
     description_list = {
         invoice: {

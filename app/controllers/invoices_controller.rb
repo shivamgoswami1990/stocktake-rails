@@ -2,7 +2,7 @@ class InvoicesController < ApplicationController
 
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
-  before_action :authenticate_user!
+  #before_action :authenticate_user!
   before_action :load_invoice, only: [:show, :update, :destroy]
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ class InvoicesController < ApplicationController
 
     render :json => {
         data: result,
-        total_pages: result.total_pages
+        total_pages: Invoice.count
     }
   end
 
@@ -338,7 +338,7 @@ class InvoicesController < ApplicationController
                         invoice_params[:invoice_no].to_s, invoice_params[:financial_year]).count).eql?(0)
         @invoice = Invoice.create(invoice_params)
         if @invoice.save
-          StatisticCalculationJob.perform_later
+          StatisticCalculationJob.perform_later(@invoice.financial_year)
           NotificationJob.perform_later('invoice', 'created', @invoice.id, current_user)
           render :json => @invoice
         else
@@ -356,7 +356,7 @@ class InvoicesController < ApplicationController
     if @invoice.update(invoice_params)
       # Only generate notifications, if any attributes changed
       if @invoice.previous_changes.present?
-        StatisticCalculationJob.perform_later
+        StatisticCalculationJob.perform_later(@invoice.financial_year)
         NotificationJob.perform_later('invoice', 'updated', @invoice.id, current_user)
       end
 

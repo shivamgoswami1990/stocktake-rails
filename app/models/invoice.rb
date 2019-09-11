@@ -40,12 +40,4 @@ class Invoice < ApplicationRecord
   def as_json(options={})
     super.as_json(options).merge({ user: self.user, company: self.company, customer: self.customer})
   end
-
-  after_commit :bust_invoice_cache # Move this to sidekiq once activejobs are included
-
-  private
-
-  def bust_invoice_cache
-    Rails.cache.redis.set("invoices/" + self.id.to_s, self.to_json)
-  end
 end
