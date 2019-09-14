@@ -1,4 +1,5 @@
 class Notification < ApplicationRecord
+  paginates_per 10
 
   # Use scope function from ./app/models/concerns
   include ScopeGenerator

@@ -45,3 +45,6 @@ Things you may want to cover:
 * Refresh statistic count from console
     - s = StatisticsController.new
     - s.refresh_statistics()
+    
+* Clear sidekiq count in the console
+    - Sidekiq::Queue.all.each(&:clear)

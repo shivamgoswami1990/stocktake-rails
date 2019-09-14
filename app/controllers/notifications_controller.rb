@@ -17,12 +17,14 @@ class NotificationsController < ApplicationController
 
   # GET /unread_notifications?user_id=1
   def unread_notifications
-    render :json => Notification.where('notifier_id = ? AND read_status = false', params[:user_id]).order(created_at: :desc)
+    render :json => Notification.where('notifier_id = ? AND read_status = false', params[:user_id])
+                        .order(created_at: :desc).page(params[:page_no])
   end
 
   # GET /read_notifications?user_id=1
   def read_notifications
-    render :json => Notification.where('notifier_id = ? AND read_status = true', params[:user_id]).order(created_at: :desc).limit(params[:item_count])
+    render :json => Notification.where('notifier_id = ? AND read_status = true', params[:user_id])
+                        .order(created_at: :desc).limit(params[:item_count]).page(params[:page_no])
   end
 
   # GET /invoice_notifications?invoice_id=1
