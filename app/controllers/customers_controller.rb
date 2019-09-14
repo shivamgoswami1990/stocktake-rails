@@ -5,7 +5,7 @@ class CustomersController < ApplicationController
 
   before_action :authenticate_user!
   before_action :load_customer, only: [:show, :edit, :update, :destroy, :last_created_invoice,
-                                       :all_ordered_items, :invoice_sample_comments]
+                                       :all_ordered_items, :invoice_sample_comments, :invoice_count]
   require "json"
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
@@ -86,6 +86,13 @@ class CustomersController < ApplicationController
     @customer = load_customer
     invoices = @customer.invoices.where.not('sample_comments' => nil).pluck(:sample_comments, :invoice_date)
     render :json => invoices
+  end
+
+  # GET /customers/1/invoice_count
+  def invoice_count
+    render :json => {
+        invoice_count: @customer.invoices.count
+    }
   end
 
   # POST /customers

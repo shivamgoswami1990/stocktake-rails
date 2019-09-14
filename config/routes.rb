@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   get 'customers/:id/last_created_invoice' => 'customers#last_created_invoice'
   get 'customers/:id/all_ordered_items' => 'customers#all_ordered_items'
   get 'customers/:id/invoice_sample_comments' => 'customers#invoice_sample_comments'
+  get 'customers/:id/invoice_count' => 'customers#invoice_count'
 
   resources :invoices
   get 'recent_invoices' => 'invoices#recent_invoices'

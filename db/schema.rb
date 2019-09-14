@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_11_034641) do
+ActiveRecord::Schema.define(version: 2019_09_14_085423) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,6 +104,7 @@ ActiveRecord::Schema.define(version: 2019_09_11_034641) do
     t.string "sample_comments"
     t.string "vehicle_no"
     t.string "financial_year"
+    t.integer "postage_text_options", default: 0
     t.index ["company_id"], name: "index_invoices_on_company_id"
     t.index ["customer_id"], name: "index_invoices_on_customer_id"
     t.index ["invoice_no", "financial_year", "company_id"], name: "index_invoices_on_invoice_no_and_financial_year_and_company_id", unique: true
