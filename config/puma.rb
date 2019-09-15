@@ -14,7 +14,15 @@ port        ENV.fetch("PORT") { 3000 }
 
 # Specifies the `environment` that Puma will run in.
 #
-environment ENV.fetch("RAILS_ENV") { "development" }
+environment "production"
+before_fork do
+  ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
+end
+
+on_worker_boot do
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end
+
 
 # Specifies the `pidfile` that Puma will use.
 pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
@@ -34,10 +42,14 @@ workers ENV.fetch("WEB_CONCURRENCY") { 2 }
 #
 preload_app!
 
-# bind "unix://#{shared_dir}/sockets/puma.sock"
-# pidfile "#{shared_dir}/pids/puma.pid"
-# state_path "#{shared_dir}/pids/puma.state"
-# activate_control_app
+app_dir = File.expand_path("../..", __FILE__)
+shared_dir = "#{app_dir}/shared"
+
+bind "unix://#{shared_dir}/sockets/puma.sock"
+pidfile "#{shared_dir}/pids/puma.pid"
+state_path "#{shared_dir}/pids/puma.state"
+activate_control_app
 
 # Allow puma to be restarted by `rails restart` command.
 plugin :tmp_restart
+
