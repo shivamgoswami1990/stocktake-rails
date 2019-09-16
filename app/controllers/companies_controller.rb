@@ -16,6 +16,14 @@ class CompaniesController < ApplicationController
   # GET /companies
   def index
     @companies = apply_scopes(Company).all
+
+    # If financial year params, then change invoice count to financial year
+    if params[:financial_year]
+      @companies.each do |company|
+        company.invoice_count = company.invoices.where(financial_year: params[:financial_year]).count
+      end
+    end
+
     render :json => @companies
   end
 

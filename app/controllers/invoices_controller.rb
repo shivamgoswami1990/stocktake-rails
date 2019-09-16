@@ -2,7 +2,7 @@ class InvoicesController < ApplicationController
 
   include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
 
-  #before_action :authenticate_user!
+  before_action :authenticate_user!
   before_action :load_invoice, only: [:show, :update, :destroy]
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
@@ -22,13 +22,13 @@ class InvoicesController < ApplicationController
     end
 
     if params[:page_no]
-      result = filter_invoices_fy(invoices.page(params[:page_no]).order(invoice_no_as_int: :desc))
+      result = filter_invoices_fy(invoices.page(params[:page_no]))
     else
-      result = filter_invoices_fy(invoices.order(invoice_no_as_int: :desc))
+      result = filter_invoices_fy(invoices)
     end
 
     render :json => {
-        data: result,
+        data: result.reorder('created_at DESC'),
         total_pages: Invoice.count
     }
   end
@@ -42,8 +42,8 @@ class InvoicesController < ApplicationController
     # Return invoices based on query params
     if by_user_id
       render :json => {
-          yours: filter_invoices_fy(Invoice.where(user_id: by_user_id).order(created_at: :desc).limit(k)),
-          others: filter_invoices_fy(Invoice.where.not(user_id: by_user_id).order(created_at: :desc).limit(k)),
+          yours: filter_invoices_fy(Invoice.where(user_id: by_user_id).reorder('created_at DESC').limit(k)),
+          others: filter_invoices_fy(Invoice.where.not(user_id: by_user_id).reorder('created_at DESC').limit(k)),
       }
     else
       render :json => {message: 'User does not exist'}, status: :not_found
@@ -117,10 +117,10 @@ class InvoicesController < ApplicationController
     # Check if the parameter is an integer. If yes, then find by invoice_as_int. Else do a pg_search
     if params[:search_term]
       if is_number?( params[:search_term] )
-        render :json => filter_invoices_fy(Invoice.where(invoice_no_as_int: params[:search_term].to_i))
+        render :json => filter_invoices_fy(Invoice.where(invoice_no_as_int: params[:search_term].to_i)).reorder('created_at DESC')
       else
         results = filter_invoices_fy(Invoice.search_by_company_customer_id(params[:search_term]))
-        render :json => results
+        render :json => results.reorder('created_at DESC')
       end
     else
       render json: {:'data' => 'search_term need to be present in the request'}, status: 400

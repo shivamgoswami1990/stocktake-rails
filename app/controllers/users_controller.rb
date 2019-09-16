@@ -22,7 +22,20 @@ class UsersController < ApplicationController
       users = apply_scopes(User).all
     end
 
-    render :json => users.page(params[:page_no])
+    if params[:page_no]
+      result = users.page(params[:page_no])
+
+      # If financial year params, then change invoice count to financial year
+      if params[:financial_year]
+        result.each do |user|
+          user.invoice_count = user.invoices.where(financial_year: params[:financial_year]).count
+        end
+      end
+    else
+      result = users
+    end
+
+    render :json => result
   end
 
   # GET /users/1

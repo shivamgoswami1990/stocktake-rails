@@ -26,6 +26,13 @@ class CustomersController < ApplicationController
 
     if params[:page_no]
       result = customers.page(params[:page_no])
+
+      # If financial year params, then change invoice count to financial year
+      if params[:financial_year]
+        result.each do |customer|
+          customer.invoice_count = customer.invoices.where(financial_year: params[:financial_year]).count
+        end
+      end
     else
       result = customers
     end
@@ -43,16 +50,27 @@ class CustomersController < ApplicationController
 
   # GET /customers/1/last_created_invoice
   def last_created_invoice
-    @customer = load_customer
-    invoices = @customer.invoices
-    max_no = invoices.maximum('invoice_no_as_int')
+    invoices = @customer.invoices.where(financial_year: params[:financial_year])
 
-    last_invoice = invoices.where(invoice_no_as_int: max_no)[0]
+    # Get the last created invoice
+    last_invoice_by_created_at = invoices.last
+
+    # Get the invoice by max invoice no
+    max_no = invoices.maximum('invoice_no_as_int')
+    last_invoice_by_invoice_no = invoices.where(invoice_no_as_int: max_no)[0]
+
     render :json => {
-        invoice_no: last_invoice[:invoice_no],
-        invoice_date: last_invoice[:invoice_date],
-        company_details: last_invoice[:company_details]
-    } unless invoices.empty?
+        created_at: {
+            invoice_no: last_invoice_by_created_at.nil? ? '': last_invoice_by_created_at[:invoice_no],
+            invoice_date: last_invoice_by_created_at.nil? ? '': last_invoice_by_created_at[:invoice_date],
+            company_details: last_invoice_by_created_at.nil? ? {}: last_invoice_by_created_at[:company_details]
+        },
+        invoice_no: {
+            invoice_no: last_invoice_by_invoice_no.nil? ? '': last_invoice_by_invoice_no[:invoice_no],
+            invoice_date: last_invoice_by_invoice_no.nil? ? '': last_invoice_by_invoice_no[:invoice_date],
+            company_details: last_invoice_by_invoice_no.nil? ? {}: last_invoice_by_invoice_no[:company_details]
+        }
+    }
   end
 
   # GET /customers/1/all_ordered_items
