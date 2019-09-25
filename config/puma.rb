@@ -17,7 +17,7 @@ environment "production"
 # Workers do not work on JRuby or Windows (both of which do not support
 # processes).
 #
-workers ENV.fetch("WEB_CONCURRENCY") { 2 }
+workers ENV.fetch("WEB_CONCURRENCY") { 5 }
 
 before_fork do
   ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
