@@ -96,7 +96,14 @@ class CustomersController < ApplicationController
       end
     end
 
-    render :json => ordered_items
+    if params[:page_no]
+      render :json => {
+          data: Kaminari.paginate_array(ordered_items).page(params[:page_no]).per(3),
+          total_records: ordered_items.length
+      }
+    else
+      render :json => ordered_items
+    end
   end
 
   # GET /customers/1/invoice_sample_comments
