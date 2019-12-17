@@ -1,12 +1,7 @@
 class CustomersController < ApplicationController
-
-  include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
-
-
-  before_action :authenticate_user!
   before_action :load_customer, only: [:show, :edit, :update, :destroy, :last_created_invoice,
-                                       :all_ordered_items, :invoice_sample_comments, :invoice_count]
-  require "json"
+                                       :all_ordered_items, :invoice_sample_comments, :get_invoice_count_for_customer]
+  before_action :authenticate_user!
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
@@ -21,24 +16,27 @@ class CustomersController < ApplicationController
     if params[:search_term]
       customers = Customer.search_customer(params[:search_term])
     else
-      customers = apply_scopes(Customer).all
+      if read_from_cache("customers")
+        customers = read_from_cache("customers")
+      else
+        customers = apply_scopes(Customer).all
+        write_to_cache("customers", customers)
+      end
     end
 
     if params[:page_no]
-      result = customers.page(params[:page_no])
-
-      # If financial year params, then change invoice count to financial year
-      if params[:financial_year]
-        result.each do |customer|
-          customer.invoice_count = customer.invoices.where(financial_year: params[:financial_year]).count
-        end
-      end
+      result = pagy(customers)
     else
       result = customers
     end
+    render :json => result
+  end
+
+  # GET /customers/1/invoice_count_by_fy
+  def invoice_count_by_fy
+    @customer = load_customer
     render :json => {
-        data: result,
-        total_records: Customer.count
+        count: @customer.invoices.where(financial_year: params[:financial_year]).count
     }
   end
 
@@ -97,10 +95,7 @@ class CustomersController < ApplicationController
     end
 
     if params[:page_no]
-      render :json => {
-          data: Kaminari.paginate_array(ordered_items).page(params[:page_no]).per(3),
-          total_records: ordered_items.length
-      }
+      render :json => pagy_array(ordered_items)
     else
       render :json => ordered_items
     end
@@ -111,13 +106,6 @@ class CustomersController < ApplicationController
     @customer = load_customer
     invoices = @customer.invoices.where.not('sample_comments' => nil).pluck(:sample_comments, :invoice_date)
     render :json => invoices
-  end
-
-  # GET /customers/1/invoice_count
-  def invoice_count
-    render :json => {
-        invoice_count: @customer.invoices.count
-    }
   end
 
   # POST /customers
@@ -171,7 +159,11 @@ class CustomersController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def load_customer
-    @customer = Customer.find(params[:id])
+    if read_from_cache("customers")
+      @customer = read_from_cache("customers").find(params[:id])
+    else
+      @customer = Customer.find(params[:id])
+    end
   end
 
   # Only allow a trusted parameter "white list" through.

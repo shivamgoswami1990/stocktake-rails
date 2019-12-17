@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  paginates_per 10
+
   extend Devise::Models
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable

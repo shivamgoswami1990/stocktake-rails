@@ -40,4 +40,4 @@ gem 'sidekiq' # Async background task management
 
 gem 'by_star' # Relative date/time related queries
 
-gem 'kaminari' # Pagination
+gem 'pagy' # Pagination

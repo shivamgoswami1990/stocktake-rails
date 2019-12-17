@@ -5,4 +5,10 @@ class Company < ApplicationRecord
 
   has_many :invoices, dependent: :destroy
   has_many :notification_objects, as: :entity
+
+  private
+
+  def update_companies_cache
+    update_cache("companies", self)
+  end
 end

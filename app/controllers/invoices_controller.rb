@@ -1,9 +1,6 @@
 class InvoicesController < ApplicationController
-
-  include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
-
-  before_action :authenticate_user!
   before_action :load_invoice, only: [:show, :update, :destroy]
+  before_action :authenticate_user!
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
@@ -18,19 +15,22 @@ class InvoicesController < ApplicationController
     if params[:search_term]
       invoices = Invoice.search_by_company_customer_id(params[:search_term])
     else
-      invoices = apply_scopes(Invoice).all
+      if read_from_cache("invoices" + params[:financial_year])
+        invoices = read_from_cache("invoices" + params[:financial_year])
+      else
+        invoices = apply_scopes(Invoice).all
+        write_to_cache("invoices" + params[:financial_year], invoices)
+      end
     end
+    invoices.reorder('created_at DESC')
 
     if params[:page_no]
-      result = filter_invoices_fy(invoices.page(params[:page_no]))
+      result = pagy(filter_invoices_fy(invoices))
     else
       result = filter_invoices_fy(invoices)
     end
 
-    render :json => {
-        data: result.reorder('created_at DESC'),
-        total_pages: Invoice.count
-    }
+    render :json => result
   end
 
   # GET /recent_invoices?by_user_id=2&financial_year=2019-20
@@ -62,7 +62,13 @@ class InvoicesController < ApplicationController
 
   # GET /invoices/1
   def show
-    @invoice = load_invoice
+    if read_from_cache("invoice-" + params[:id])
+      @invoice = read_from_cache("invoice-" + params[:id])
+    else
+      @invoice = load_invoice
+      write_to_cache("invoice-" + params[:id], @invoice)
+    end
+
     render :json => @invoice
   end
 
@@ -338,7 +344,6 @@ class InvoicesController < ApplicationController
                         invoice_params[:invoice_no].to_s, invoice_params[:financial_year]).count).eql?(0)
         @invoice = Invoice.create(invoice_params)
         if @invoice.save
-          StatisticCalculationJob.perform_later(@invoice.financial_year)
           NotificationJob.perform_later('invoice', 'created', @invoice.id, current_user)
           render :json => @invoice
         else
@@ -356,7 +361,6 @@ class InvoicesController < ApplicationController
     if @invoice.update(invoice_params)
       # Only generate notifications, if any attributes changed
       if @invoice.previous_changes.present?
-        StatisticCalculationJob.perform_later(@invoice.financial_year)
         NotificationJob.perform_later('invoice', 'updated', @invoice.id, current_user)
       end
 
@@ -376,7 +380,11 @@ class InvoicesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def load_invoice
-    @invoice = Invoice.find(params[:id])
+    if read_from_cache("invoice-" + params[:id])
+      @invoice = read_from_cache("invoice-" + params[:id])
+    else
+      @invoice = Invoice.find(params[:id])
+    end
   end
 
   # Financial year filter for the invoice

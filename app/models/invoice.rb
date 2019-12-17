@@ -1,5 +1,5 @@
 class Invoice < ApplicationRecord
-  paginates_per 10
+  after_commit :update_invoices_cache
 
   # Use scope function from ./app/models/concerns
   include ScopeGenerator, PgSearch::Model
@@ -39,5 +39,13 @@ class Invoice < ApplicationRecord
   # Custom JSON Attributes
   def as_json(options={})
     super.as_json(options).merge({ user: self.user, company: self.company, customer: self.customer})
+  end
+
+  private
+
+  def update_invoices_cache
+    StatisticCalculationJob.perform_later(self.financial_year)
+    update_cache("invoices" + self.financial_year, self)
+    write_to_cache("invoice-" + self.id.to_s, self)
   end
 end

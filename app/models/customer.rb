@@ -1,9 +1,9 @@
 class Customer < ApplicationRecord
-  paginates_per 10
-
   # Use scope function from ./app/models/concerns
   include ScopeGenerator, PgSearch::Model
   Customer.new.createScope(Customer)
+
+  after_commit :update_customers_cache
 
   # pg_search
   pg_search_scope :search_customer, against: {
@@ -19,4 +19,11 @@ class Customer < ApplicationRecord
 
   has_many :invoices, dependent: :destroy
   has_many :notification_objects, as: :entity
+
+
+  private
+
+  def update_customers_cache
+    update_cache("customers", self)
+  end
 end

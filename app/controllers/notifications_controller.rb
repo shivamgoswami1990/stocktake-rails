@@ -1,7 +1,5 @@
 class NotificationsController < ApplicationController
-  include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
   before_action :authenticate_user!
-  require "json"
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
@@ -17,14 +15,14 @@ class NotificationsController < ApplicationController
 
   # GET /unread_notifications?user_id=1
   def unread_notifications
-    render :json => Notification.where('notifier_id = ? AND read_status = false', params[:user_id])
-                        .order(created_at: :desc).page(params[:page_no])
+    render :json => pagy(Notification.where('notifier_id = ? AND read_status = false', params[:user_id])
+                        .order(created_at: :desc))
   end
 
   # GET /read_notifications?user_id=1
   def read_notifications
-    render :json => Notification.where('notifier_id = ? AND read_status = true', params[:user_id])
-                        .order(created_at: :desc).limit(params[:item_count]).page(params[:page_no])
+    render :json => pagy(Notification.where('notifier_id = ? AND read_status = true', params[:user_id])
+                        .order(created_at: :desc).limit(params[:item_count]))
   end
 
   # GET /invoice_notifications?invoice_id=1

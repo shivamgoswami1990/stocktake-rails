@@ -1,9 +1,6 @@
 class ItemsController < ApplicationController
-
-  include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
-  before_action :authenticate_user!
   before_action :load_item, only: [:show, :edit, :update, :destroy]
-  require "json"
+  before_action :authenticate_user!
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
@@ -18,18 +15,20 @@ class ItemsController < ApplicationController
     if params[:search_term]
       items = Item.search_item(params[:search_term])
     else
-      items = apply_scopes(Item).all
+      if read_from_cache("items")
+        items = read_from_cache("items")
+      else
+        items = apply_scopes(Item).all
+        write_to_cache("items", items)
+      end
     end
 
     if params[:page_no]
-      result = items.page(params[:page_no])
+      result = pagy(items)
     else
       result = items
     end
-    render :json => {
-        data: result,
-        total_records: Item.count
-    }
+    render :json => result
   end
 
   # GET /items/1
@@ -66,7 +65,11 @@ class ItemsController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def load_item
-    @item = Item.find(params[:id])
+    if read_from_cache("invoices")
+      @item = read_from_cache("invoices").find(params[:id])
+    else
+      @item = Item.find(params[:id])
+    end
   end
 
   # Only allow a trusted parameter "white list" through.

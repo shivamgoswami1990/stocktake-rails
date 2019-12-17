@@ -1,6 +1,15 @@
 class ApplicationController < ActionController::API
-  include DeviseTokenAuth::Concerns::SetUserByToken
+  include DeviseTokenAuth::Concerns::SetUserByToken, Pagy::Backend, HasScopeGenerator
   before_action :configure_permitted_parameters, if: :devise_controller?
+  require "json"
+
+  def write_to_cache(key, value)
+    Rails.cache.write(key, value)
+  end
+
+  def read_from_cache(key)
+    return Rails.cache.read(key)
+  end
 
   protected
 

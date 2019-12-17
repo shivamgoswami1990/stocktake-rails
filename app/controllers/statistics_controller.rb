@@ -1,6 +1,4 @@
 class StatisticsController < ApplicationController
-
-  include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
   before_action :authenticate_user!
 
   #Initialise scopes using concerns
@@ -8,7 +6,13 @@ class StatisticsController < ApplicationController
 
   # GET /statistics
   def index
-    render :json => apply_scopes(Statistic).all
+    if read_from_cache("statistics")
+      statistics = read_from_cache("statistics")
+    else
+      statistics = apply_scopes(Statistic).all
+      write_to_cache("statistics", statistics)
+    end
+    render :json => statistics
   end
 
   public

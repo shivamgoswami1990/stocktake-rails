@@ -1,10 +1,6 @@
 class UsersController < ApplicationController
-
-  include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
-
-  before_action :authenticate_user!
   before_action :load_user, only: [:show, :edit, :change_user_password, :update, :destroy]
-
+  before_action :authenticate_user!
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
@@ -23,19 +19,19 @@ class UsersController < ApplicationController
     end
 
     if params[:page_no]
-      result = users.page(params[:page_no])
-
-      # If financial year params, then change invoice count to financial year
-      if params[:financial_year]
-        result.each do |user|
-          user.invoice_count = user.invoices.where(financial_year: params[:financial_year]).count
-        end
-      end
+      result = pagy(users)
     else
       result = users
     end
-
     render :json => result
+  end
+
+  # GET /users/1/invoice_count_by_fy
+  def invoice_count_by_fy
+    @user = load_user
+    render :json => {
+        count: @user.invoices.where(financial_year: params[:financial_year]).count
+    }
   end
 
   # GET /users/1

@@ -1,10 +1,6 @@
 class CompaniesController < ApplicationController
-
-  include HasScopeGenerator #located at /app/controllers/concerns/has_scope_generator.rb
-
+  before_action :load_company, only: [:show, :edit, :update, :destroy, :last_created_invoice, :invoice_count_by_fy]
   before_action :authenticate_user!
-  before_action :load_company, only: [:show, :edit, :update, :destroy, :last_created_invoice]
-
 
   #//////////////////////////////////////////// SCOPES ////////////////////////////////////////////////////////////////
 
@@ -15,16 +11,13 @@ class CompaniesController < ApplicationController
 
   # GET /companies
   def index
-    @companies = apply_scopes(Company).all
-
-    # If financial year params, then change invoice count to financial year
-    if params[:financial_year]
-      @companies.each do |company|
-        company.invoice_count = company.invoices.where(financial_year: params[:financial_year]).count
-      end
+    if read_from_cache("companies")
+      companies = read_from_cache("companies")
+    else
+      companies = apply_scopes(Company).all
+      write_to_cache("companies", companies)
     end
-
-    render :json => @companies
+    render :json => companies
   end
 
   # GET /companies/1
@@ -32,6 +25,15 @@ class CompaniesController < ApplicationController
     @company = load_company
     render :json => @company
   end
+
+  # GET /companies/1/invoice_count_by_fy
+  def invoice_count_by_fy
+    @company = load_company
+    render :json => {
+        count: @company.invoices.where(financial_year: params[:financial_year]).count
+    }
+  end
+
 
   # GET /companies/1/last_created_invoice?financial_year=2018-19
   def last_created_invoice
@@ -92,7 +94,11 @@ class CompaniesController < ApplicationController
   private
   # Use callbacks to share common setup or constraints between actions.
   def load_company
-    @company = Company.find(params[:id])
+    if read_from_cache("companies")
+      @company = read_from_cache("companies").find(params[:id])
+    else
+      @company = Company.find(params[:id])
+    end
   end
 
   # Only allow a trusted parameter "white list" through.
