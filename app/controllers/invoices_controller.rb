@@ -150,9 +150,11 @@ class InvoicesController < ApplicationController
         first_company_count = 0
         second_company_count = 0
         third_company_count = 0
+        fourth_company_count = 0
         first_company_revenue = 0.to_f
         second_company_revenue = 0.to_f
         third_company_revenue = 0.to_f
+        fourth_company_revenue = 0.to_f
 
         # Go through all invoices for this month
         invoices.each do |invoice|
@@ -188,6 +190,17 @@ class InvoicesController < ApplicationController
               end
             end
           end
+
+          if invoice.company_id.eql?(4)
+            fourth_company_count += 1
+
+            # Check if hsn_summary exists
+            unless invoice[:tax_summary].eql?(nil)
+              unless invoice[:tax_summary]['hsn_summary_total'].eql?(nil)
+                fourth_company_revenue += invoice[:tax_summary]['hsn_summary_total']['total_taxable_value'].to_f
+              end
+            end
+          end
         end
 
         # Append the results of this month to the summary
@@ -209,6 +222,11 @@ class InvoicesController < ApplicationController
                     'company_id': 3,
                     'invoice_count': third_company_count,
                     'invoice_revenue': third_company_revenue
+                },
+                {
+                    'company_id': 4,
+                    'invoice_count': fourth_company_count,
+                    'invoice_revenue': fourth_company_revenue
                 }
             ]})
       end
