@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
   }
 
   has_many :invoices
+  has_many :ordered_items
   has_many :notifications, foreign_key: :notifier_id, class_name: "Notification", dependent: :nullify
   has_many :notifications, foreign_key: :actor_id, class_name: "Notification", dependent: :nullify
 end

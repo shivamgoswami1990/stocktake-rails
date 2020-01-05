@@ -18,6 +18,7 @@ class Customer < ApplicationRecord
   enum freight_type: [:HALF, :FULL]
 
   has_many :invoices, dependent: :destroy
+  has_many :ordered_items, dependent: :destroy
   has_many :notification_objects, as: :entity
 
 

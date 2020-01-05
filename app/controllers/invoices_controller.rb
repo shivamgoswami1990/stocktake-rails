@@ -344,12 +344,52 @@ class InvoicesController < ApplicationController
     if params[:by_customer_id]
       if invoices.length.eql?0
         invoices = Invoice.where(customer_id: params[:by_customer_id])
-      else
+      elsez
         invoices = invoices.where(customer_id: params[:by_customer_id])
       end
     end
 
     render :json => invoices.order(invoice_no_as_int: :desc)
+  end
+
+  # GET /extract_items
+  def extract_items
+    item_array_list = []
+
+    Invoice.all.each do |invoice|
+      # Check if item_array is not empty
+      unless invoice.item_array.empty?
+
+        # Loop through item_array
+        invoice.item_array.each do |item|
+          item_name_key = item['item_name'].delete(' ').downcase
+
+          item_array_list.push({
+                                   item_name: item['item_name'],
+                                   name_key: item_name_key,
+                                   item_price: item['item_price'],
+                                   packaging: item['packaging'].to_s.gsub(/[^\d^.]/, '').to_f,
+                                   no_of_items: item['no_of_items'],
+                                   total_quantity: item['total_quantity'].to_s.gsub(/[^\d^.]/, '').to_f,
+                                   price_per_kg: item['price_per_kg'],
+                                   item_hsn: item['item_hsn'],
+                                   item_amount: item['item_amount'],
+                                   invoice_id: invoice.id,
+                                   financial_year: invoice.financial_year,
+                                   customer_id: invoice.customer_id,
+                                   company_id: invoice.company_id,
+                                   user_id: invoice.user_id,
+                                   order_date: invoice.invoice_date,
+                                   created_at: invoice.invoice_date,
+                                   updated_at: invoice.invoice_date,
+                               })
+        end
+      end
+    end
+
+    # Bulk insert all the records
+    OrderedItem.insert_all(item_array_list)
+
   end
 
   # POST /invoices
@@ -380,6 +420,7 @@ class InvoicesController < ApplicationController
       # Only generate notifications, if any attributes changed
       if @invoice.previous_changes.present?
         NotificationJob.perform_later('invoice', 'updated', @invoice.id, current_user)
+        OrderedItemsJob.perform_later(@invoice)
       end
 
       render :json => @invoice

@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   post 'historical_data' => 'invoices#historical_data'
   get 'hsn_summary_by_date' => 'invoices#hsn_summary_by_date'
   get 'invoice_list' => 'invoices#invoice_list'
+  get 'extract_items' => 'invoices#extract_items'
 
   get 'unread_notifications' => 'notifications#unread_notifications'
   get 'read_notifications' => 'notifications#read_notifications'
@@ -32,6 +33,8 @@ Rails.application.routes.draw do
   put 'mark_all_notifications_as_read' => 'notifications#mark_all_notifications_as_read'
 
   resources :statistics
+  resources :ordered_items
+  get 'all_ordered_items' => 'ordered_items#all_ordered_items'
 
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'

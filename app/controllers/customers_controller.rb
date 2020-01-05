@@ -71,36 +71,6 @@ class CustomersController < ApplicationController
     }
   end
 
-  # GET /customers/1/all_ordered_items
-  def all_ordered_items
-    @customer = load_customer
-    results = @customer.invoices.where(invoice_status: 1).order('created_at DESC').pluck(:item_array, :created_at)
-
-    ordered_items = []
-
-    # Sort the unique items
-    results.each do |result|
-      item_array = result[0]
-      created_at = result[1]
-
-      item_array.each do |item|
-
-        # Check if item name is not empty
-        if item['item_name'].length > 0
-          # Check if ordered items length is less than 5
-          item['created_at'] = created_at
-          ordered_items.push(item)
-        end
-      end
-    end
-
-    if params[:page_no]
-      render :json => pagy_array(ordered_items)
-    else
-      render :json => ordered_items
-    end
-  end
-
   # GET /customers/1/invoice_sample_comments
   def invoice_sample_comments
     @customer = load_customer

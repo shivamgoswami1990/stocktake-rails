@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_14_085423) do
+ActiveRecord::Schema.define(version: 2019_12_28_021740) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -150,6 +150,30 @@ ActiveRecord::Schema.define(version: 2019_09_14_085423) do
     t.index ["notifier_id"], name: "index_notifications_on_notifier_id"
   end
 
+  create_table "ordered_items", force: :cascade do |t|
+    t.string "item_name", null: false
+    t.string "name_key", null: false
+    t.float "item_price"
+    t.float "packaging"
+    t.integer "no_of_items"
+    t.float "total_quantity"
+    t.float "price_per_kg"
+    t.string "item_hsn"
+    t.float "item_amount"
+    t.string "financial_year"
+    t.datetime "order_date"
+    t.bigint "user_id"
+    t.bigint "customer_id"
+    t.bigint "company_id"
+    t.bigint "invoice_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["company_id"], name: "index_ordered_items_on_company_id"
+    t.index ["customer_id"], name: "index_ordered_items_on_customer_id"
+    t.index ["invoice_id"], name: "index_ordered_items_on_invoice_id"
+    t.index ["user_id"], name: "index_ordered_items_on_user_id"
+  end
+
   create_table "statistics", force: :cascade do |t|
     t.float "total_revenue", default: 0.0, null: false
     t.float "total_taxable_value", default: 0.0, null: false
@@ -195,4 +219,8 @@ ActiveRecord::Schema.define(version: 2019_09_14_085423) do
   add_foreign_key "notifications", "notification_objects"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "notifications", "users", column: "notifier_id"
+  add_foreign_key "ordered_items", "companies"
+  add_foreign_key "ordered_items", "customers"
+  add_foreign_key "ordered_items", "invoices"
+  add_foreign_key "ordered_items", "users"
 end

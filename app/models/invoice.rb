@@ -18,6 +18,7 @@ class Invoice < ApplicationRecord
   belongs_to :customer
   belongs_to :company
   has_many :notification_objects, as: :entity
+  has_many :ordered_items, dependent: :destroy
   validates :invoice_no, uniqueness: { scope: [:financial_year, :company_id] }
 
   counter_culture :company, column_name: proc {|model| model.invoice_status.eql?('SAVED') ? 'invoice_count' : nil},

@@ -48,3 +48,9 @@ Things you may want to cover:
     
 * Clear sidekiq count in the console
     - Sidekiq::Queue.all.each(&:clear)
+    
+* Migrate ordered items from invoices list
+    - rails db:migrate
+    - i = InvoicesController.new
+    - i.extract_items
+    - Restart rails & sidekiq service
