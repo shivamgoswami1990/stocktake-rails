@@ -364,10 +364,14 @@ class InvoicesController < ApplicationController
         invoice.item_array.each do |item|
           item_name_key = item['item_name'].delete(' ').downcase
 
+          if item['units_for_display'].nil?
+            item['units_for_display'] = 'kg'
+          end
           item_array_list.push({
                                    item_name: item['item_name'],
                                    name_key: item_name_key,
                                    item_price: item['item_price'],
+                                   units_for_display: item['units_for_display'],
                                    packaging: item['packaging'].to_s.gsub(/[^\d^.]/, '').to_f,
                                    no_of_items: item['no_of_items'],
                                    total_quantity: item['total_quantity'].to_s.gsub(/[^\d^.]/, '').to_f,

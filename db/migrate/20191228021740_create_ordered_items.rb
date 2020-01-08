@@ -4,6 +4,7 @@ class CreateOrderedItems < ActiveRecord::Migration[6.0]
       t.string :item_name, null: false
       t.string :name_key, null: false
       t.float :item_price
+      t.string :units_for_display, default: 'kg'
       t.float :packaging
       t.integer :no_of_items
       t.float :total_quantity

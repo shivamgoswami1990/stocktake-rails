@@ -154,6 +154,7 @@ ActiveRecord::Schema.define(version: 2019_12_28_021740) do
     t.string "item_name", null: false
     t.string "name_key", null: false
     t.float "item_price"
+    t.string "units_for_display", default: "kg"
     t.float "packaging"
     t.integer "no_of_items"
     t.float "total_quantity"
