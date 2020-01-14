@@ -344,7 +344,7 @@ class InvoicesController < ApplicationController
     if params[:by_customer_id]
       if invoices.length.eql?0
         invoices = Invoice.where(customer_id: params[:by_customer_id])
-      elsez
+      else
         invoices = invoices.where(customer_id: params[:by_customer_id])
       end
     end
