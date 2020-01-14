@@ -36,6 +36,8 @@ Rails.application.routes.draw do
   resources :ordered_items
   get 'all_ordered_items' => 'ordered_items#all_ordered_items'
 
+  resources :transports
+
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
 end
