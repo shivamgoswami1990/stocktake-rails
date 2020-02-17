@@ -33,10 +33,11 @@ Things you may want to cover:
     - sudo certbot certonly --manual  -d *.jkaromaticsandperfumers.online -d jkaromaticsandperfumers.online --preferred-challenges dns-01 --server https://acme-v02.api.letsencrypt.org/directory    
     
 * Backup production DB
+    - sudo ssh -i "jk-mac.pem" ubuntu@3.6.66.43
     - pg_dump -U ubuntu -f jkbackup.dump jkstocktake -Ft --pass
     
 * Restore/copy production DB to local
-    - sudo scp -i "jk-mac.pem" ubuntu@13.126.46.210:/home/ubuntu/jkbackup.dump ./
+    - sudo scp -i "jk-mac.pem" ubuntu@3.6.66.43:/home/ubuntu/jkbackup.dump ./
     - pg_restore -d jkstocktake -U postgres -C jkbackup.dump --no-acl
     
 * Update counter for all invoice count
