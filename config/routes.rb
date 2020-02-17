@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   resources :statistics
   resources :ordered_items
   get 'all_ordered_items' => 'ordered_items#all_ordered_items'
+  post 'search_ordered_items_by_name' => 'ordered_items#search_ordered_items_by_name'
 
   resources :transports
 

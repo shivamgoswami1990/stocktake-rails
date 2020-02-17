@@ -12,14 +12,7 @@ class OrderedItemsController < ApplicationController
   # GET /ordered_items
   # No pagination on ordered items. Only search with scopes
   def index
-    ordered_items = []
-    if params[:search_term] and params[:customer_id]
-      ordered_items = OrderedItem.where(customer_id: params[:customer_id]).search_ordered_item(params[:search_term]).group_by(&:name_key)
-    elsif params[:recent_items] and params[:customer_id]
-      ordered_items = OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc).limit(10).group_by(&:name_key)
-    end
-
-    render :json => ordered_items
+    render :json => OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc).group_by(&:name_key)
   end
 
   # GET /ordered_items/1
@@ -31,6 +24,19 @@ class OrderedItemsController < ApplicationController
   # GET /all_ordered_items
   def all_ordered_items
     render :json => OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc)
+  end
+
+  # POST /search_ordered_items_by_name
+  # ** Item name can have spaces which gets %20 char when using query params in  GET request
+  def search_ordered_items_by_name
+    ordered_items = []
+    if params[:search_term] and params[:customer_id]
+      ordered_items = OrderedItem.where(customer_id: params[:customer_id]).search_ordered_item(params[:search_term]).group_by(&:name_key)
+    elsif params[:recent_items] and params[:customer_id]
+      ordered_items = OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc).limit(10).group_by(&:name_key)
+    end
+
+    render :json => ordered_items
   end
 
   # POST /ordered_items
