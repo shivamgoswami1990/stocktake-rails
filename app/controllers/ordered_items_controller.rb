@@ -12,7 +12,7 @@ class OrderedItemsController < ApplicationController
   # GET /ordered_items
   # No pagination on ordered items. Only search with scopes
   def index
-    render :json => OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc).group_by(&:name_key)
+    render :json => OrderedItem.where(customer_id: params[:customer_id]).order(item_name: :asc).order(order_date: :desc).group_by(&:name_key)
   end
 
   # GET /ordered_items/1
