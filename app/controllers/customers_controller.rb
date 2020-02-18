@@ -61,12 +61,14 @@ class CustomersController < ApplicationController
         created_at: {
             invoice_no: last_invoice_by_created_at.nil? ? '': last_invoice_by_created_at[:invoice_no],
             invoice_date: last_invoice_by_created_at.nil? ? '': last_invoice_by_created_at[:invoice_date],
-            company_details: last_invoice_by_created_at.nil? ? {}: last_invoice_by_created_at[:company_details]
+            company_details: last_invoice_by_created_at.nil? ? {}: last_invoice_by_created_at[:company_details],
+            company_id: last_invoice_by_created_at.nil? ? {}: last_invoice_by_created_at[:company_id]
         },
         invoice_no: {
             invoice_no: last_invoice_by_invoice_no.nil? ? '': last_invoice_by_invoice_no[:invoice_no],
             invoice_date: last_invoice_by_invoice_no.nil? ? '': last_invoice_by_invoice_no[:invoice_date],
-            company_details: last_invoice_by_invoice_no.nil? ? {}: last_invoice_by_invoice_no[:company_details]
+            company_details: last_invoice_by_invoice_no.nil? ? {}: last_invoice_by_invoice_no[:company_details],
+            company_id: last_invoice_by_invoice_no.nil? ? {}: last_invoice_by_invoice_no[:company_id]
         }
     }
   end
