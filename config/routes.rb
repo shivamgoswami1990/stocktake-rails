@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   patch 'change_user_password' => 'users#change_user_password'
 
   resources :items
+  post 'search_items' => 'items#search_items'
 
   resources :companies
   get 'companies/:id/last_created_invoice' => 'companies#last_created_invoice'
@@ -13,13 +14,14 @@ Rails.application.routes.draw do
   get 'customers/:id/all_ordered_items' => 'customers#all_ordered_items'
   get 'customers/:id/invoice_sample_comments' => 'customers#invoice_sample_comments'
   get 'customers/:id/invoice_count' => 'customers#invoice_count'
+  post 'search_customers' => 'customers#search_customers'
 
   resources :invoices
   get 'recent_invoices' => 'invoices#recent_invoices'
   get 'invoices_between' => 'invoices#invoices_between'
   get 'previous_and_next_invoice' => 'invoices#previous_and_next_invoice'
   get 'previous_ordered_item_search_for_customer' => 'invoices#previous_ordered_item_search_for_customer'
-  get 'past_invoices' => 'invoices#past_invoices'
+  post 'past_invoices' => 'invoices#past_invoices'
   post 'historical_data' => 'invoices#historical_data'
   get 'hsn_summary_by_date' => 'invoices#hsn_summary_by_date'
   get 'invoice_list' => 'invoices#invoice_list'

@@ -37,6 +37,11 @@ class ItemsController < ApplicationController
     render :json => @item
   end
 
+  # POST /search_items
+  def search_items
+    render :json => Item.search_item(params[:search_term])
+  end
+
   # POST /items
   def create
     @item = Item.new(item_params)

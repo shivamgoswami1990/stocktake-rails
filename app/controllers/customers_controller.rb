@@ -78,6 +78,11 @@ class CustomersController < ApplicationController
     render :json => invoices
   end
 
+  # POST /search_customers
+  def search_customers
+    render :json => Customer.search_customer(params[:search_term])
+  end
+
   # POST /customers
   def create
     # If GSTIN no exists, check if it's unique
