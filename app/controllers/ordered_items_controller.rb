@@ -31,7 +31,7 @@ class OrderedItemsController < ApplicationController
   def search_ordered_items_by_name
     ordered_items = []
     if params[:search_term] and params[:customer_id]
-      ordered_items = OrderedItem.where(customer_id: params[:customer_id]).search_ordered_item(params[:search_term]).group_by(&:name_key)
+      ordered_items = OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc).search_ordered_item(params[:search_term]).group_by(&:name_key)
     elsif params[:recent_items] and params[:customer_id]
       ordered_items = OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc).limit(10).group_by(&:name_key)
     end
