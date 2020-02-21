@@ -31,7 +31,22 @@ class OrderedItemsController < ApplicationController
   def search_ordered_items_by_name
     ordered_items = []
     if params[:search_term] and params[:customer_id]
-      ordered_items = OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc).search_ordered_item(params[:search_term]).group_by(&:name_key)
+      # Check if the search type is a single letter search for returning results that start with -- "A"
+      if params[:is_single_letter_search] and params[:search_term].length.eql?(1)
+        # Loop through items for this customer & find matching strings
+        ordered_items_for_customer = OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc)
+        ordered_items_for_customer.each do |ordered_item|
+          if ordered_item['name_key'].start_with?(params[:search_term].downcase)
+            ordered_items.push(ordered_item)
+          end
+        end
+
+        # Group the list of ordered items starting with "A" by name_key
+        ordered_items = ordered_items.group_by(&:name_key)
+      else
+        ordered_items = OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc).
+            search_ordered_item(params[:search_term]).group_by(&:name_key)
+      end
     elsif params[:recent_items] and params[:customer_id]
       ordered_items = OrderedItem.where(customer_id: params[:customer_id]).order(order_date: :desc).limit(10).group_by(&:name_key)
     end

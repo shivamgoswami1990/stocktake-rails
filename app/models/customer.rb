@@ -11,7 +11,7 @@ class Customer < ApplicationRecord
       st_address: 'B',
       city: 'C'
   }, using: {
-      tsearch: { prefix: true }
+      tsearch: { prefix: true, any_word: true }
   }
 
   # Define enum
