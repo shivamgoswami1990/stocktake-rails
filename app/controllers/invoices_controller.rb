@@ -326,8 +326,9 @@ class InvoicesController < ApplicationController
   def invoice_list
     # Get invoices by date / month first
     invoices = []
+    Time.zone = 'New Delhi'
     if params[:month] and params[:year]
-      invoices = Invoice.by_month(params[:month], strict: true, field: 'invoice_date', year: params[:year])
+      invoices = Invoice.by_month(params[:month].to_i, strict: true, field: 'invoice_date', year: params[:year])
     elsif params[:from_date] and params[:to_date]
       invoices = Invoice.where("invoice_date >= ? AND invoice_date <= ? AND invoice_status = 1", params[:from_date], params[:to_date])
     end
