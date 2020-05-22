@@ -324,29 +324,21 @@ class InvoicesController < ApplicationController
 
   # GET /invoice_list?by_customer_id=1&month=2&year=2019
   def invoice_list
-    # Filter invoices by date / month first
+    # Get invoices by date / month first
     invoices = []
     if params[:month] and params[:year]
       invoices = Invoice.by_month(params[:month], strict: true, field: 'invoice_date', year: params[:year])
     elsif params[:from_date] and params[:to_date]
-      invoices = Invoice.between_times(params[:from_date].to_time, params[:to_date].to_time, strict: true, field: 'invoice_date')
+      invoices = Invoice.where("invoice_date >= ? AND invoice_date <= ? AND invoice_status = 1", params[:from_date], params[:to_date])
     end
 
     # Filter invoices by company and/or customer
     if params[:by_company_id]
-      if invoices.length.eql?0
-        invoices = Invoice.where(company_id: params[:by_company_id])
-      else
-        invoices = invoices.where(company_id: params[:by_company_id])
-      end
+      invoices = invoices.where(company_id: params[:by_company_id])
     end
 
     if params[:by_customer_id]
-      if invoices.length.eql?0
-        invoices = Invoice.where(customer_id: params[:by_customer_id])
-      else
-        invoices = invoices.where(customer_id: params[:by_customer_id])
-      end
+      invoices = invoices.where(customer_id: params[:by_customer_id])
     end
 
     render :json => invoices.order(invoice_no_as_int: :desc)
