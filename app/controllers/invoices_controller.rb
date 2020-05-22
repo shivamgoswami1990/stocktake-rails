@@ -56,8 +56,8 @@ class InvoicesController < ApplicationController
     to_date = params[:to_date]
 
     render :json => Invoice.where('created_at BETWEEN ? AND ? AND invoice_status = 1',
-                                  Time.parse(from_date).utc.beginning_of_day + 86400,
-                                  Time.parse(to_date).utc.end_of_day + 86400).order(invoice_no_as_int: :desc)
+                                  Time.parse(from_date),
+                                  Time.parse(to_date)).order(invoice_no_as_int: :desc)
   end
 
   # GET /invoices/1
@@ -326,7 +326,6 @@ class InvoicesController < ApplicationController
   def invoice_list
     # Get invoices by date / month first
     invoices = []
-    Time.zone = 'New Delhi'
     if params[:month] and params[:year]
       invoices = Invoice.by_month(params[:month].to_i, strict: true, field: 'invoice_date', year: params[:year])
     elsif params[:from_date] and params[:to_date]
