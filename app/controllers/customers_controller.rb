@@ -90,7 +90,7 @@ class CustomersController < ApplicationController
     # If GSTIN no exists, check if it's unique
     valid_params = false
 
-    if customer_params[:gstin_no].empty?
+    if customer_params[:gstin_no].nil?
       # If GST no is empty, create the customer
       valid_params = true
     else
