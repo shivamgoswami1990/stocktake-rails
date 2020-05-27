@@ -9,10 +9,18 @@ class StatisticsController < ApplicationController
     if read_from_cache("statistics")
       statistics = read_from_cache("statistics")
     else
-      statistics = apply_scopes(Statistic).all
+      statistics = Statistic.all
       write_to_cache("statistics", statistics)
     end
-    render :json => statistics
+
+    fy_statistic = {}
+    # Loop through all statistics
+    statistics.each do |statistic|
+      if statistic['financial_year'].eql?params[:by_financial_year]
+        fy_statistic = statistic
+      end
+    end
+    render :json => fy_statistic
   end
 
   public
@@ -24,6 +32,9 @@ class StatisticsController < ApplicationController
     financial_year_list.each do |financial_year|
       stats_for_financial_year(financial_year) unless financial_year.nil?
     end
+
+    # Update the cached value
+    write_to_cache("statistics", Statistic.all)
   end
 
   def stats_for_financial_year(financial_year)
@@ -34,7 +45,11 @@ class StatisticsController < ApplicationController
     total_postage = 0
     total_discount = 0
 
-    Invoice.where(financial_year: financial_year).pluck(:item_summary, :tax_summary).each do |invoice|
+    start_date = financial_year.split('-')[0] + '-04-01'
+    end_date = '20' + financial_year.split('-')[1] + '-03-31'
+
+    Invoice.where('invoice_date >= ? AND invoice_date <= ? AND invoice_status = 1', Time.parse(start_date), Time.parse(end_date))
+        .pluck(:item_summary, :tax_summary).each do |invoice|
       invoice_item_summary = invoice[0]
       invoice_tax_summary = invoice[1]
 
