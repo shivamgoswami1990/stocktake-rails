@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  root :to => 'users#index'
   mount_devise_token_auth_for 'User', at: 'auth', skip: [:omniauth_callbacks]
   resources :users
   patch 'change_user_password' => 'users#change_user_password'

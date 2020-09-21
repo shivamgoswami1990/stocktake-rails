@@ -334,11 +334,15 @@ class InvoicesController < ApplicationController
 
     # Filter invoices by company and/or customer
     if params[:by_company_id]
-      invoices = invoices.where(company_id: params[:by_company_id])
+      if invoices.length > 0
+        invoices = invoices.where(company_id: params[:by_company_id])
+      end
     end
 
     if params[:by_customer_id]
-      invoices = invoices.where(customer_id: params[:by_customer_id])
+      if invoices.length > 0
+        invoices = invoices.where(customer_id: params[:by_customer_id])
+      end
     end
 
     render :json => invoices.order(invoice_no_as_int: :desc)
