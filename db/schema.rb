@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_17_030103) do
+ActiveRecord::Schema.define(version: 2021_04_05_100207) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,7 +60,9 @@ ActiveRecord::Schema.define(version: 2020_01_17_030103) do
     t.string "transport_name"
     t.string "destination"
     t.string "transport_gst_no"
+    t.string "search_name"
     t.index ["last_edited_by_id"], name: "index_customers_on_last_edited_by_id"
+    t.index ["search_name"], name: "index_customers_on_search_name"
   end
 
   create_table "invoices", force: :cascade do |t|

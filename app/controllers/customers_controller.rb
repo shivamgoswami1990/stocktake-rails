@@ -133,6 +133,15 @@ class CustomersController < ApplicationController
     render :json => @customers
   end
 
+  # Sanitise existing customer names. Remove all symbols, spaces & convert to lowercase
+  def remove_symbols_from_name
+    all_customers = Customer.all
+
+    all_customers.each do |customer|
+      customer.update(search_name: customer.name.gsub(/[^a-zA-Z\s]/,'').downcase)
+    end
+  end
+
   private
   # Use callbacks to share common setup or constraints between actions.
   def load_customer

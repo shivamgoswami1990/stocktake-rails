@@ -7,11 +7,11 @@ class Customer < ApplicationRecord
 
   # pg_search
   pg_search_scope :search_customer, against: {
-      name: 'A',
+    search_name: 'A',
       st_address: 'B',
       city: 'C'
   }, using: {
-      tsearch: { prefix: true, any_word: true }
+      tsearch: { prefix: true , any_word: true, dictionary: 'simple'}
   }
 
   # Define enum
@@ -25,6 +25,7 @@ class Customer < ApplicationRecord
   private
 
   def update_customers_cache
+    self.update(search_name: self.name.gsub(/[^a-zA-Z\s]/,'').downcase)
     update_cache("customers", self)
   end
 end

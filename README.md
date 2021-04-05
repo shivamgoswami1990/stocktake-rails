@@ -55,3 +55,7 @@ Things you may want to cover:
     - i = InvoicesController.new
     - i.extract_items
     - Restart rails & sidekiq service
+  
+* Convert existing customer names - remove special characters, keep spaces
+    - c = CustomersController.new
+    - c.remove_symbols_from_name
