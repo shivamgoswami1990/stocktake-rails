@@ -106,6 +106,7 @@ class CustomersController < ApplicationController
     # Create customer
     if valid_params
       @customer = Customer.new(customer_params)
+      @customer.search_name = @customer.name.gsub(/[^a-zA-Z\s]/,'').downcase
       if @customer.save
         NotificationJob.perform_later('customer', 'created', @customer.id, current_user)
         render :json => @customer, status: 201
@@ -120,6 +121,7 @@ class CustomersController < ApplicationController
   # PATCH/PUT /customers/1
   def update
     if @customer.update(customer_params)
+      @customer.update(search_name: @customer.name.gsub(/[^a-zA-Z\s]/,'').downcase)
       NotificationJob.perform_later('customer', 'updated', @customer.id, current_user)
       render :json => @customer
     else

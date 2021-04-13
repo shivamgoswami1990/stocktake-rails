@@ -25,7 +25,6 @@ class Customer < ApplicationRecord
   private
 
   def update_customers_cache
-    self.update(search_name: self.name.gsub(/[^a-zA-Z\s]/,'').downcase)
     update_cache("customers", self)
   end
 end

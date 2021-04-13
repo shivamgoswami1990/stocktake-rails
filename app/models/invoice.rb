@@ -9,7 +9,7 @@ class Invoice < ApplicationRecord
       }
   pg_search_scope :search_by_company_customer_id,
                   :associated_against => {
-                      :customer => [:name, :st_address, :city, :state_name],
+                      :customer => [:search_name, :st_address, :city, :state_name],
                       :company => [:name, :st_address, :city, :state_name]
                   }, :against => [:invoice_no_as_int], using: {tsearch: { prefix: true }}
   Invoice.new.createScope(Invoice)
