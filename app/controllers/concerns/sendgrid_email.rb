@@ -1,6 +1,6 @@
 module SendgridEmail
     include SendGrid
-    def send_contact_email(name, email, message)
+    def send_contact_email(name, category, email, message)
         require 'sendgrid-ruby'
 
         data = {
@@ -13,6 +13,7 @@ module SendgridEmail
               ],
               "dynamic_template_data": {
                 "name": name,
+                "category": category,
                 "email": email,
                 "message": message
               }
