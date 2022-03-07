@@ -41,3 +41,5 @@ gem 'sidekiq' # Async background task management
 gem 'by_star' # Relative date/time related queries
 
 gem 'pagy' # Pagination
+
+gem 'sendgrid-ruby'

@@ -42,6 +42,8 @@ Rails.application.routes.draw do
 
   resources :transports
 
+  post 'send_email_for_customer_site' => 'emails#send_email_for_customer_site'
+
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
 end

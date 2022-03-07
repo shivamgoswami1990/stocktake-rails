@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  include DeviseTokenAuth::Concerns::SetUserByToken, Pagy::Backend, HasScopeGenerator
+  include DeviseTokenAuth::Concerns::SetUserByToken, Pagy::Backend, HasScopeGenerator, SendgridEmail
   before_action :configure_permitted_parameters, if: :devise_controller?
   require "json"
 
